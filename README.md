@@ -15,7 +15,10 @@ internet, a tela sensível ao toque e a bateria de íon-lítio.
 
 ## Jogar
 
-Sem build, sem servidor, sem dependências. **Baixe e abra `index.html` com duplo clique.**
+**No navegador:** <https://jhow-ds.github.io/craft-era/>
+
+Ou sem servidor nenhum: **baixe o repositório e abra `index.html` com duplo clique.** Não há
+build, não há dependências.
 
 O jogo precisa de internet apenas para carregar as três fontes tipográficas (Big Shoulders
 Display, Archivo e Fragment Mono). Offline ele continua funcionando, com as fontes do sistema.
