@@ -116,42 +116,77 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .mp[data-on="1"]{border-color:var(--era);background:var(--era)}
 
 /* ─────────── GAVETA DE PEÇAS ───────────
-   Bandeja de componentes já descobertos: a bancada consome as peças ao
-   fundir, então a gaveta é o que garante que nada se perca para sempre. */
+   Coluna de componentes já descobertos, à direita da bancada. A lista
+   rola na vertical e se divide por era: uma bandeja horizontal com 104
+   peças virou uma tira longa demais para percorrer.                        */
 .gaveta{
-  position:absolute;left:0;right:0;bottom:0;height:58px;z-index:3;
-  display:flex;align-items:center;gap:16px;padding:0 30px 0 28px;
-  border-top:1px solid var(--trilho);
-  background:linear-gradient(180deg,rgba(26,22,18,.55),rgba(26,22,18,.92));
+  grid-area:gaveta;position:relative;display:flex;flex-direction:column;
+  min-height:0;min-width:0;overflow:hidden;
+  background:var(--chapa-fundo);border-left:1px solid var(--trilho);
 }
-.gaveta[data-alvo="1"]{
-  border-top-color:var(--era);
-  background:linear-gradient(180deg,rgba(34,28,22,.92),rgba(34,28,22,.98));
-}
+.gaveta[data-alvo="1"]{background:#1b1713}
 .gaveta[data-alvo="1"] .gav-rot{color:var(--era-texto)}
+.gav-cab{
+  display:flex;align-items:baseline;gap:10px;
+  padding:17px 18px 0;flex:0 0 auto;
+}
 .gav-rot{
-  font-family:var(--medida);font-size:9.5px;letter-spacing:.16em;
+  font-family:var(--medida);font-size:10px;letter-spacing:.16em;
   color:var(--tinta-3);flex:0 0 auto;
 }
+.gav-conta{
+  margin-left:auto;font-family:var(--medida);font-size:9px;
+  letter-spacing:.09em;color:var(--tinta-3);
+}
+.gav-ajuda{
+  flex:0 0 auto;padding:6px 18px 12px;border-bottom:1px solid var(--trilho);
+  font-family:var(--medida);font-size:8.5px;line-height:1.55;
+  letter-spacing:.06em;color:#5c544a;
+}
 .gav-lista{
-  display:flex;align-items:center;gap:1px;flex:1;min-width:0;height:100%;
-  overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  padding:1px 10px 14px;scrollbar-width:thin;
   scrollbar-color:#3f3831 transparent;
 }
-.gav-lista::-webkit-scrollbar{height:3px}
+.gav-lista::-webkit-scrollbar{width:4px}
 .gav-lista::-webkit-scrollbar-thumb{background:#3f3831}
-.gav-item{
-  display:flex;align-items:center;gap:8px;padding:7px 11px;flex:0 0 auto;
-  font-size:11.5px;color:var(--tinta-2);white-space:nowrap;cursor:pointer;
-  border:0;border-bottom:1px solid transparent;background:none;
-  transition:color .15s,border-color .15s;font-family:inherit;
-  --p1:var(--tinta);--p2:#8d8478;
+.g-era{padding-top:7px}
+.g-era + .g-era{border-top:1px solid #262019}
+.g-era-cab{
+  position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:7px;
+  padding:7px 6px 5px;background:var(--chapa-fundo);
 }
-.gav-item:hover,.gav-item:focus-visible{color:var(--tinta);border-bottom-color:var(--era);outline:none}
-.gav-item svg{width:20px;height:20px;display:block;flex:0 0 20px}
-.gav-item:hover svg{--p1:var(--tinta)}
+.g-era-cor{width:7px;height:7px;flex:0 0 7px;display:block}
+.g-era-nome{
+  font-family:var(--medida);font-size:9px;letter-spacing:.13em;
+  color:var(--tinta-2);
+}
+.g-era-q{
+  margin-left:auto;font-family:var(--medida);font-size:9px;
+  letter-spacing:.06em;color:var(--tinta-3);
+}
+.g-era-itens{display:flex;flex-direction:column}
+.gav-item{
+  display:flex;align-items:center;gap:9px;width:100%;padding:6px 7px;
+  font-family:inherit;font-size:12px;text-align:left;color:var(--tinta-2);
+  background:none;border:1px solid transparent;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.gav-item:hover,.gav-item:focus-visible{
+  color:var(--tinta);background:var(--chapa-alta);border-color:var(--trilho);outline:none;
+}
+.gav-item:focus-visible{border-color:var(--era)}
+.gav-g{width:26px;height:26px;flex:0 0 26px;display:block}
+.gav-g svg{width:26px;height:26px;display:block}
+.gav-t{min-width:0;display:flex;flex-direction:column;gap:2px}
+.gav-n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+.gav-ano{
+  font-family:var(--medida);font-size:8px;letter-spacing:.07em;color:var(--tinta-3);
+}
+.gav-item:hover .gav-ano,.gav-item:focus-visible .gav-ano{color:var(--tinta-3)}
 .gav-nada{
-  font-family:var(--medida);font-size:9.5px;letter-spacing:.12em;color:var(--tinta-3);
+  display:block;padding:14px 8px;font-family:var(--medida);
+  font-size:9.5px;letter-spacing:.12em;color:var(--tinta-3);
 }
 
 /* ─────────── PEÇA ───────────
@@ -175,13 +210,26 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .peca.arrastando{cursor:grabbing;z-index:40}
 .peca.arrastando .assento{
   border-color:var(--era);background:#262019;
-  box-shadow:0 18px 40px rgba(0,0,0,.55);
+  box-shadow:0 18px 40px rgba(0,0,0,.55),
+             0 0 0 1px color-mix(in srgb,var(--era) 38%,transparent),
+             0 0 30px color-mix(in srgb,var(--era) 20%,transparent);
 }
 .peca.alvo .assento{border-color:var(--era);background:#262019}
 .peca.alvo .assento::after{
   content:"";position:absolute;inset:-5px;
   border:1px dashed color-mix(in srgb,var(--era) 55%,transparent);
   border-radius:13px;pointer-events:none;
+}
+/* Chegar perto energiza: o alvo pulsa um campo da cor da era. A pista é
+   relacional, não decorativa — ela diz que o encaixe vai acontecer. */
+.peca.alvo .assento::before{
+  content:"";position:absolute;inset:-9px;border-radius:16px;pointer-events:none;
+  border:1px solid color-mix(in srgb,var(--era) 68%,transparent);
+  animation:campo 1.15s cubic-bezier(.16,1,.3,1) infinite;
+}
+@keyframes campo{
+  0%{transform:scale(.94);opacity:.8}
+  72%,100%{transform:scale(1.07);opacity:0}
 }
 .peca.montando .assento{border-style:dashed;border-color:var(--era)}
 .peca.novidade{animation:chegar .5s cubic-bezier(.16,1,.3,1)}
@@ -233,7 +281,38 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   background:var(--era);outline:1px solid color-mix(in srgb,var(--era) 34%,transparent);
   outline-offset:2px;
 }
-.faisca{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--era);z-index:39;pointer-events:none}
+/* O fio também conduz: quando há encaixe próximo, ele pulsa. */
+.uniao.energizada{
+  height:2px;
+  box-shadow:0 0 12px color-mix(in srgb,var(--era) 50%,transparent);
+  animation:fluxo .9s ease-in-out infinite;
+}
+@keyframes fluxo{0%,100%{opacity:.62}50%{opacity:1}}
+
+/* ─────────── SÍNTESE ───────────
+   O momento autoral da bancada: dois componentes viram um. Núcleo, três
+   ondas e a peça assentando na chapa — só quando a receita fecha.       */
+.forja{position:fixed;width:0;height:0;z-index:39;pointer-events:none}
+.forja i{
+  position:absolute;left:0;top:0;width:20px;height:20px;margin:-10px;border-radius:50%;
+  border:1px solid var(--era);opacity:0;
+  animation:onda .74s cubic-bezier(.16,1,.3,1) forwards;
+}
+.forja i:nth-child(2){animation-delay:.09s}
+.forja i:nth-child(3){animation-delay:.18s}
+.forja b{
+  position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px;border-radius:50%;
+  background:var(--era);opacity:0;
+  animation:nucleo .6s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes onda{0%{transform:scale(.25);opacity:.9}100%{transform:scale(7);opacity:0}}
+@keyframes nucleo{0%{transform:scale(.3);opacity:1}55%{transform:scale(1.5);opacity:.75}100%{transform:scale(2.4);opacity:0}}
+.peca.sintetizada .assento{animation:sintese .78s cubic-bezier(.16,1,.3,1)}
+@keyframes sintese{
+  0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--era) 55%,transparent)}
+  45%{box-shadow:0 0 34px 2px color-mix(in srgb,var(--era) 32%,transparent)}
+  100%{box-shadow:0 0 0 0 transparent}
+}
 
 /* ─────────── NOTA ─────────── */
 .nota{
@@ -314,6 +393,34 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 }
 .aviso[data-visivel="1"]{opacity:1}
 
+/* ─────────── DICA DE PEÇA ───────────
+   Hover e foco abrem a ficha do componente: nome, como foi criado, o que
+   ele é e o que destrava. Fica fora do fluxo, colada ao item, e some no
+   primeiro gesto que exigir a mão.                                      */
+.dica{
+  position:fixed;left:0;top:0;z-index:65;width:312px;max-width:calc(100vw - 28px);
+  padding:15px 17px 16px;pointer-events:none;
+  background:var(--chapa-alta);border:1px solid var(--trilho-2);
+  box-shadow:0 18px 44px rgba(0,0,0,.62);
+  opacity:0;transform:translateY(5px);
+  transition:opacity .14s,transform .14s cubic-bezier(.16,1,.3,1);
+}
+.dica[data-visivel="1"]{opacity:1;transform:translateY(0)}
+.dica::before{
+  content:"";position:absolute;left:-1px;right:-1px;top:-1px;height:2px;
+  background:var(--dica-cor,var(--era));
+}
+.dica-era{display:flex;align-items:center;gap:7px;font-family:var(--medida);font-size:9px;letter-spacing:.13em;color:var(--tinta-3)}
+.dica-era i{width:7px;height:7px;flex:0 0 7px;display:block;background:var(--dica-cor,var(--era))}
+.dica-nome{font-family:var(--display);font-weight:600;font-size:23px;line-height:1.04;margin-top:8px}
+.dica-meta{font-family:var(--medida);font-size:9.5px;letter-spacing:.06em;color:var(--tinta-3);margin-top:5px}
+.dica-meta b{color:var(--dica-cor,var(--era-texto));font-weight:400}
+.dica-bloco{margin-top:12px;border-top:1px solid #262019;padding-top:10px}
+.dica-rot{display:block;font-family:var(--medida);font-size:8.5px;letter-spacing:.15em;color:var(--tinta-3)}
+.dica-txt{margin-top:5px;font-size:12px;line-height:1.55;color:var(--tinta-2)}
+.dica-txt em{font-style:normal;color:var(--tinta)}
+.dica-txt .dica-ordem{display:block;margin-top:4px;font-family:var(--medida);font-size:8.5px;letter-spacing:.09em;color:var(--tinta-3)}
+
 /* ─────────── CÓDIGO ─────────── */
 .codigo-fundo{
   position:fixed;inset:0;background:rgba(10,9,8,.76);z-index:70;
@@ -385,17 +492,22 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 /* ─────────── GRADE ─────────── */
 .app{
   display:grid;height:100vh;
-  grid-template-columns:minmax(0,1fr) 350px;
+  grid-template-columns:minmax(0,1fr) 300px 336px;
   grid-template-rows:76px minmax(0,1fr) 164px;
-  grid-template-areas:"trilho trilho" "bancada nota" "fita fita";
+  grid-template-areas:"trilho trilho trilho" "bancada gaveta nota" "fita fita fita";
 }
-.trilho,.bancada,.nota,.fita{min-width:0}
+.trilho,.bancada,.gaveta,.nota,.fita{min-width:0}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
+/* No empilhado a gaveta deixa a coluna e se deita ao lado do registro:
+   a lista continua vertical, só muda de dono da faixa.                    */
 @media (max-width:1180px){
-  .app{grid-template-columns:1fr;grid-template-rows:76px minmax(0,1fr) auto 164px;
-       grid-template-areas:"trilho" "bancada" "nota" "fita"}
-  .nota{border-left:none;border-top:1px solid var(--trilho);height:170px;flex:none}
+  .app{grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+       grid-template-rows:76px minmax(0,1fr) 196px 164px;
+       grid-template-areas:"trilho trilho" "bancada bancada" "gaveta nota" "fita fita"}
+  .gaveta{border-left:none;border-top:1px solid var(--trilho)}
+  .nota{border-left:1px solid var(--trilho);border-top:1px solid var(--trilho);
+        height:auto;padding:15px 18px;gap:13px}
   .objetivo{display:none}
   .talho{display:none}
   .era-btn{padding:5px 7px;font-size:9px;letter-spacing:.06em}
@@ -405,7 +517,9 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   .eras{display:none}
 }
 @media (max-width:720px){
-  .app{grid-template-rows:64px minmax(0,1fr) auto 156px}
+  .app{grid-template-columns:minmax(0,1fr);
+       grid-template-rows:64px minmax(0,1fr) 126px 92px 140px;
+       grid-template-areas:"trilho" "bancada" "gaveta" "nota" "fita"}
   .trilho{height:64px;padding:0 16px;gap:14px}
   .marca{font-size:26px}
   .contador{display:none}
@@ -413,28 +527,26 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   .nome{font-size:11.5px}
   .grafico svg{width:54px;height:54px}
   .fita{padding:14px 16px}
-  .gaveta{height:52px;padding:0 16px;gap:11px}
-  .gav-rot{display:none}
+  .gav-cab{padding:11px 16px 0}
+  .gav-ajuda{display:none}
+  .gav-lista{padding:1px 8px 10px}
+  .g-era-cab{padding:5px 4px 4px}
   .selo{display:none}
   .mp-rot{display:none}
   .marcos-placa{right:16px;top:14px}
-  .gav-item{padding:6px 9px;font-size:11px}
-  .gav-item svg{width:18px;height:18px;flex:0 0 18px}
+  .gav-item{padding:5px 6px;font-size:11px}
+  .gav-g{width:22px;height:22px;flex:0 0 22px}
+  .gav-g svg{width:22px;height:22px}
 }
-/* Aparelhos curtos no empilhado: a bancada precisava de 324 px úteis para as
-   duas fileiras de peças e tinha 225 px em 667 de altura — as quatro peças
-   caíam na mesma faixa. Coluna, fita, gaveta e assento encolhem juntos. */
+/* Aparelhos curtos: coluna, fita, gaveta e assento encolhem juntos para a
+   bancada não perder as duas fileiras de peças. */
 @media (max-width:1180px) and (max-height:780px){
   :root{--lado-peca:100px}
-  .app{grid-template-rows:64px minmax(0,1fr) auto 124px}
-  .nota{height:100px;padding:13px 18px;gap:11px}
-  .nota .sem-nada,.nota .reg-texto{font-size:11px;line-height:1.5}
   .fita{padding:13px 18px}
   /* Sem altura para a frase de instrução: a coluna já a diz por extenso. */
   .fita-nada{display:none}
   .nome{font-size:11px}
   .grafico svg{width:48px;height:48px}
-  .gaveta{height:44px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -465,13 +577,17 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
       <span class="mp-rot">MARCOS</span>
       <span class="mp-lista" id="marcosPlaca" role="img" aria-label="Marcos históricos descobertos"></span>
     </div>
-
-    <div class="gaveta" id="gaveta">
-      <span class="gav-rot">PEÇAS</span>
-      <div class="gav-lista" id="gavLista" role="list"
-           aria-label="Peças já descobertas. Clique para trazer uma cópia à bancada; arraste uma peça para cá para devolvê-la."></div>
-    </div>
   </main>
+
+  <section class="gaveta" id="gaveta" aria-label="Peças já descobertas">
+    <div class="gav-cab">
+      <span class="gav-rot">PEÇAS</span>
+      <span class="gav-conta" id="gavConta">0 DESCOBERTAS</span>
+    </div>
+    <div class="gav-ajuda">CLIQUE TRAZ UMA CÓPIA · BOTÃO DIREITO NA BANCADA REMOVE</div>
+    <div class="gav-lista" id="gavLista"
+         aria-label="Peças já descobertas, separadas por era. Clique para trazer uma cópia à bancada; arraste uma peça até aqui para devolvê-la."></div>
+  </section>
 
   <aside class="nota" id="nota" aria-label="Registro da tentativa"></aside>
 
@@ -487,6 +603,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
 <div class="sr" id="sr" role="status" aria-live="polite"></div>
+<div class="dica" id="dica" role="tooltip" aria-hidden="true" data-visivel="0"></div>
 
 <div class="codigo-fundo" id="codigoFundo"></div>
 <aside class="codigo" id="codigo" role="dialog" aria-modal="true" aria-label="Código das invenções" aria-hidden="true">
@@ -1219,7 +1336,7 @@ const S = {
 };
 
 const $ = (id) => document.getElementById(id);
-const bancada = $("bancada"), nota = $("nota"), aviso = $("aviso"), sr = $("sr");
+const bancada = $("bancada"), nota = $("nota"), aviso = $("aviso"), sr = $("sr"), dica = $("dica");
 const fitaNome = $("fitaNome"), fitaMeta = $("fitaMeta"), fitaPassos = $("fitaPassos");
 
 /* ═══════════════ CORES DE TRAÇO ═══════════════
@@ -1244,7 +1361,9 @@ function criarEl(p){
   el.style.top  = p.y + "px";
 
   const rotulo = d.ano ? `${d.n}, ${d.ano}` : `${d.n}, construção didática`;
-  el.setAttribute("aria-label", rotulo + (p.cadeia.length > 1 ? `, montagem em ${p.cadeia.length} etapas` : ""));
+  el.setAttribute("aria-label", rotulo +
+    (p.cadeia.length > 1 ? `, montagem em ${p.cadeia.length} etapas` : "") +
+    ". Botão direito remove da bancada.");
 
   el.innerHTML =
     `<div class="nome">${d.n}</div>` +
@@ -1284,11 +1403,12 @@ function acender(el, d){
 }
 
 function desenhar(){
-  bancada.querySelectorAll(".peca,.uniao,.faisca").forEach(n => n.remove());
+  bancada.querySelectorAll(".peca,.uniao").forEach(n => n.remove());
   for (const p of S.bancada){
     const el = criarEl(p);
     if (p.montando) el.classList.add("montando");
     if (p.novo) { el.classList.add("novidade"); p.novo = false; }
+    if (p.sintese) { el.classList.add("sintetizada"); p.sintese = false; }
     if (p.viva) { p.viva = false; acender(el, IT[p.id]); }
     p.el = el;
     bancada.appendChild(el);
@@ -1299,11 +1419,10 @@ function desenhar(){
 
 const elDe = (uid) => S.bancada.find(p => p.uid === uid);
 
-/* Altura útil da bancada: desconta a gaveta do rodapé para que nenhuma
-   peça possa ser arrastada para trás dela.                              */
+/* Altura útil da bancada. A gaveta saiu do pé da chapa e virou coluna, então
+   a chapa inteira é área de trabalho.                                    */
 function alturaUtil(){
-  const g = $("gaveta");
-  return bancada.clientHeight - (g ? g.offsetHeight : 0);
+  return bancada.clientHeight;
 }
 
 /* Largura do assento, lida do CSS: 132 no desktop, 112 no celular, 100 em
@@ -1330,35 +1449,135 @@ function alturaPeca(){
   return h || ladoPeca() + 46;
 }
 
+/* ═══════════════ FICHA DA PEÇA (DICA) ═══════════════
+   Hover e foco contam a mesma história: nome, como foi criada, o que é e
+   o que destrava. A ficha serve à peça da bancada e à linha da gaveta.  */
+function primeiraFrase(txt){
+  const m = String(txt).match(/^.*?[.!?](?=\s|$)/);
+  return m ? m[0] : txt;
+}
+function comoFoiCriada(id){
+  const r = RECEITAS.find(x => x.out === id);
+  if (!r){
+    return INICIAIS.includes(id)
+      ? "Material inicial — já está na bancada desde o começo."
+      : "Peça base da árvore.";
+  }
+  return r.seq.map(x => IT[x].n).join(" + ");
+}
+function oQueDesbloqueia(id){
+  const nomes = [...new Set(RECEITAS.filter(r => r.seq.includes(id)).map(r => IT[r.out].n))];
+  return nomes.length ? nomes.join(" · ") : "Nada nesta árvore — é um marco final.";
+}
+function abrirDica(id, el, p){
+  const d = IT[id];
+  if (!d) return;
+  const r = RECEITAS.find(x => x.out === id);
+  const etapas = r
+    ? `${r.seq.length} ${r.seq.length === 2 ? "ETAPAS · ORDEM LIVRE" : "ETAPAS · A ORDEM IMPORTA"}`
+    : (INICIAIS.includes(id) ? "MATERIAL INICIAL" : "");
+  const meta = d.ano
+    ? `${d.ano}${d.autor ? ` · ${d.autor}` : ""}`
+    : "CONSTRUÇÃO DIDÁTICA · SEM DATA PRÓPRIA";
+  dica.style.setProperty("--dica-cor", ERA[d.e].txt);
+  dica.innerHTML =
+    `<div class="dica-era"><i></i>${ERA[d.e].nome}${d.star ? " · MARCO" : ""}</div>` +
+    `<div class="dica-nome">${d.n}</div>` +
+    `<div class="dica-meta">${meta}</div>` +
+    `<div class="dica-bloco"><span class="dica-rot">COMO FOI CRIADO</span>` +
+      `<p class="dica-txt"><em>${comoFoiCriada(id)}</em>` +
+      `${etapas ? `<span class="dica-ordem">${etapas}${p && p.cadeia.length > 1 ? ` · MONTAGEM EM ${p.cadeia.length} ETAPAS` : ""}</span>` : ""}</p></div>` +
+    `<div class="dica-bloco"><span class="dica-rot">O QUE É</span>` +
+      `<p class="dica-txt">${d.txt ? primeiraFrase(d.txt) : (d.ano ? "Marco histórico datado; o registro completo abre quando você o descobre." : "Degrau didático do jogo, sem data histórica própria.")}</p></div>` +
+    `<div class="dica-bloco"><span class="dica-rot">DESBLOQUEIA</span>` +
+      `<p class="dica-txt">${oQueDesbloqueia(id)}</p></div>`;
+  dica.dataset.visivel = "1";
+  dica.setAttribute("aria-hidden", "false");
+  posicionarDica(el);
+}
+function posicionarDica(el){
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  const w = dica.offsetWidth, h = dica.offsetHeight, gap = 12;
+  let left = r.right + gap;
+  if (left + w > innerWidth - gap) left = r.left - w - gap;
+  if (left < gap) left = Math.min(innerWidth - w - gap, Math.max(gap, r.left));
+  let top = r.top + r.height / 2 - h / 2;
+  top = Math.max(gap, Math.min(innerHeight - h - gap, top));
+  dica.style.left = Math.round(left) + "px";
+  dica.style.top = Math.round(top) + "px";
+}
+let dicaT;
+function agendarDica(id, el, p){
+  clearTimeout(dicaT);
+  dicaT = setTimeout(() => abrirDica(id, el, p), 110);
+}
+function fecharDica(){
+  clearTimeout(dicaT);
+  dica.dataset.visivel = "0";
+  dica.setAttribute("aria-hidden", "true");
+}
+
 /* ═══════════════ GAVETA ═══════════════
-   Fundir consome as duas peças. Sem a gaveta, o jogador ficaria sem
-   madeira depois da primeira combinação e a partida morreria ali.      */
+   Coluna de componentes já descobertos, agrupada por era. Fundir consome
+   as duas peças; sem a gaveta o jogador ficaria sem madeira depois da
+   primeira combinação e a partida morreria ali.                        */
 function renderGaveta(){
   const lista = $("gavLista");
   const ids = [...INICIAIS, ...[...S.feitos].filter(id => !INICIAIS.includes(id))];
+  $("gavConta").textContent = `${ids.length} DESCOBERTA${ids.length === 1 ? "" : "S"}`;
   if (!ids.length){
     lista.innerHTML = `<span class="gav-nada">NADA AINDA</span>`;
     return;
   }
-  lista.innerHTML = ids.map(id => {
+  const porEra = new Map(ERAS.map(e => [e.id, []]));
+  ids.forEach(id => {
     const d = IT[id];
-    return `<button class="gav-item" type="button" data-id="${id}"
-      title="Trazer outra peça de ${d.n} para a bancada">${d.g}<span>${d.n}</span></button>`;
+    if (d && porEra.has(d.e)) porEra.get(d.e).push(id);
+  });
+  lista.innerHTML = ERAS.map(e => {
+    const itens = porEra.get(e.id);
+    if (!itens.length) return "";
+    const total = Object.keys(IT).filter(id => IT[id].e === e.id).length;
+    return `<section class="g-era" data-era="${e.id}" role="group" aria-label="${e.nome}">
+      <div class="g-era-cab">
+        <span class="g-era-cor" style="background:${e.cor}"></span>
+        <span class="g-era-nome">${e.nome}</span>
+        <span class="g-era-q">${itens.length}/${total}</span>
+      </div>
+      <div class="g-era-itens">${itens.map(id => {
+        const d = IT[id];
+        return `<button class="gav-item" type="button" data-id="${id}"
+          aria-label="Trazer uma cópia de ${d.n} para a bancada">` +
+          `<span class="gav-g" aria-hidden="true">${arte(id)}</span>` +
+          `<span class="gav-t"><span class="gav-n">${d.n}</span>` +
+          `<span class="gav-ano">${d.ano ? d.ano.toUpperCase() : "DIDÁTICO"}</span></span></button>`;
+      }).join("")}</div>
+    </section>`;
   }).join("");
 }
 
 /* Devolver uma peça à gaveta é o único jeito de abrir espaço sem fundir —
-   sem isso a bancada entope e a partida trava.                          */
+   sem isso a bancada entope e a partida trava. O botão direito faz o mesmo
+   sem exigir o arraste até a coluna.                                    */
 function devolverPeca(p){
   S.bancada = S.bancada.filter(o => o !== p);
+  fecharDica();
   desenhar();
   falar(`${IT[p.id].n} devolvido à gaveta.`);
+}
+function removerPeca(p){
+  S.bancada = S.bancada.filter(o => o !== p);
+  fecharDica();
+  desenhar();
+  falar(`${IT[p.id].n} removido da bancada.`);
+  mostrarAviso(`${IT[p.id].n} removido da bancada`);
 }
 
 function puxarPeca(id){
   if (S.bancada.length >= 24){
-    mostrarAviso("Bancada cheia — devolva uma peça à gaveta ou funda duas.");
-    falar("A bancada está cheia. Devolva uma peça à gaveta arrastando-a para baixo.");
+    mostrarAviso("Bancada cheia — remova uma peça com o botão direito ou funda duas.");
+    falar("A bancada está cheia. Remova uma peça com o botão direito ou funda duas.");
     return;
   }
   const W = bancada.clientWidth, H = alturaUtil();
@@ -1421,6 +1640,11 @@ function ligarPecas(){
     if (!p.el) return;
     p.el.addEventListener("pointerdown", pegarPeca);
     p.el.addEventListener("keydown", tecladoPeca);
+    p.el.addEventListener("contextmenu", menuPeca);
+    p.el.addEventListener("pointerenter", () => { if (!arraste) agendarDica(p.id, p.el, p); });
+    p.el.addEventListener("pointerleave", () => { if (!arraste) fecharDica(); });
+    p.el.addEventListener("focus", () => { if (!arraste) agendarDica(p.id, p.el, p); });
+    p.el.addEventListener("blur", fecharDica);
   });
 }
 
@@ -1429,11 +1653,28 @@ function dentro(x, y){
   return { x: x - r.left, y: y - r.top };
 }
 
+/* A gaveta agora mora à direita da chapa: o alvo de devolução é um
+   retângulo, não a faixa inferior inteira.                              */
+function sobreGaveta(ev){
+  const r = $("gaveta").getBoundingClientRect();
+  return ev.clientX >= r.left && ev.clientX <= r.right &&
+         ev.clientY >= r.top && ev.clientY <= r.bottom;
+}
+
+/* Botão direito sobre uma peça da bancada remove a peça sem exigir que
+   ela seja arrastada até a gaveta. A descoberta continua guardada.     */
+function menuPeca(ev){
+  ev.preventDefault();
+  const p = elDe(+ev.currentTarget.dataset.uid);
+  if (p && !arraste) removerPeca(p);
+}
+
 function pegarPeca(ev){
   const uid = +ev.currentTarget.dataset.uid;
   const p = elDe(uid);
   if (!p) return;
   ev.preventDefault();
+  fecharDica();
   try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
   ev.currentTarget.focus();
   const pt = dentro(ev.clientX, ev.clientY);
@@ -1462,7 +1703,7 @@ function mover(ev){
   arraste.alvo = alvo;
   S.bancada.forEach(o => { if (o.el) o.el.classList.toggle("alvo", o === alvo); });
   desenharUniao(alvo);
-  $("gaveta").dataset.alvo = ev.clientY >= $("gaveta").getBoundingClientRect().top ? "1" : "0";
+  $("gaveta").dataset.alvo = sobreGaveta(ev) ? "1" : "0";
 }
 
 const centro = (p) => {
@@ -1484,6 +1725,7 @@ function melhorAlvo(origem){
 
 function desenharUniao(alvo){
   if (!uniaoEl) return;
+  uniaoEl.classList.toggle("energizada", !!alvo);
   if (!alvo){ uniaoEl.style.width = "0px"; return; }
   const r = bancada.getBoundingClientRect();
   const a = centro(arraste.p), b = centro(alvo);
@@ -1500,19 +1742,19 @@ function soltar(ev){
   if (!arraste) return;
   const { p, alvo, movido } = arraste;
   const gav = $("gaveta");
-  const sobreGaveta = movido && ev.clientY >= gav.getBoundingClientRect().top;
+  const devolve = movido && sobreGaveta(ev);
   gav.dataset.alvo = "0";
   p.el.classList.remove("arrastando");
   S.bancada.forEach(o => { if (o.el) o.el.classList.remove("alvo"); });
   if (uniaoEl){ uniaoEl.remove(); uniaoEl = null; }
   arraste = null;
-  if (sobreGaveta) devolverPeca(p);
+  if (devolve) devolverPeca(p);
   else if (alvo) engatar(alvo, p);
   else if (movido) repositionar(p);
 }
 
 function repositionar(p){
-  p.x = Math.max(0, Math.min(bancada.clientWidth  - 132, p.x));
+  p.x = Math.max(0, Math.min(bancada.clientWidth - ladoPeca(), p.x));
   p.y = Math.max(0, Math.min(alturaUtil() - (p.el?.offsetHeight || 140), p.y));
 }
 
@@ -1526,9 +1768,14 @@ function tecladoPeca(ev){
   };
   if (teclas[ev.key]){
     ev.preventDefault();
-    p.x = Math.max(0, Math.min(bancada.clientWidth  - 132, p.x + teclas[ev.key][0]));
+    p.x = Math.max(0, Math.min(bancada.clientWidth - ladoPeca(), p.x + teclas[ev.key][0]));
     p.y = Math.max(0, Math.min(alturaUtil() - (p.el?.offsetHeight || 140), p.y + teclas[ev.key][1]));
     p.el.style.left = p.x + "px"; p.el.style.top = p.y + "px";
+    return;
+  }
+  if (ev.key === "Delete" || ev.key === "Backspace"){
+    ev.preventDefault();
+    removerPeca(p);
     return;
   }
   if (ev.key === "Enter" || ev.key === " "){
@@ -1585,12 +1832,16 @@ function fundir(r, seq, base, entrada){
   const x = Math.round((base.x + entrada.x) / 2) - 66;
   const y = Math.round((base.y + entrada.y) / 2) - 40;
 
-  faisca(base.x + 66, base.y + 40);
+  /* O efeito nasce do encontro dos dois centros, não do canto de um. */
+  const c1 = base.el ? centro(base) : { x: base.x + 66, y: base.y + 96 };
+  const c2 = entrada.el ? centro(entrada) : { x: entrada.x + 66, y: entrada.y + 96 };
+  forja((c1.x + c2.x) / 2, (c1.y + c2.y) / 2);
 
   S.bancada = S.bancada.filter(p => p !== base && p !== entrada);
   const nova = novaPeca(r.out, x, y);
   nova.novo = true;
   nova.viva = inedito;
+  nova.sintese = true;
   S.bancada.push(nova);
 
   S.registro = r.out;
@@ -1632,17 +1883,21 @@ function falhar(base, entrada){
   mostrarAviso(`${a} + ${b} não se combinam`);
 }
 
-function faisca(px, py){
+/* ═══════════════ SÍNTESE ═══════════════
+   Núcleo, três ondas e a peça nova assentando. Roda só quando a receita
+   fecha, no ponto onde os dois componentes se encontraram — é o momento
+   memorável da bancada, não um enfeite de hover.                        */
+function forja(px, py){
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const r = bancada.getBoundingClientRect();
   const f = document.createElement("div");
-  f.className = "faisca";
-  f.style.left = (r.left + px - 4) + "px";
-  f.style.top  = (r.top + py - 4) + "px";
+  f.className = "forja";
+  f.setAttribute("aria-hidden", "true");
+  f.style.left = (r.left + px) + "px";
+  f.style.top  = (r.top + py) + "px";
+  f.innerHTML = "<i></i><i></i><i></i><b></b>";
   document.body.appendChild(f);
-  f.animate(
-    [{ transform:"scale(1)", opacity:1 }, { transform:"scale(9)", opacity:0 }],
-    { duration:620, easing:"cubic-bezier(.16,1,.3,1)" }
-  ).onfinish = () => f.remove();
+  setTimeout(() => f.remove(), 900);
 }
 
 /* ═══════════════ AVISO ═══════════════ */
@@ -1702,7 +1957,7 @@ function renderNota(){
       </div>`;
     }).join("") + `</div>`);
   } else {
-    partes.push(`<p class="sem-nada">Arraste um componente até outro. Se a combinação fechar uma receita, os dois se fundem em um só. A gaveta no pé da bancada guarda o que você já descobriu — clique numa peça para trazer outra, ou arraste uma peça de volta para lá.</p>`);
+    partes.push(`<p class="sem-nada">Arraste um componente até outro. Se a combinação fechar uma receita, os dois se fundem em um só. A gaveta à direita guarda o que você já descobriu — clique numa peça para trazer outra, arraste uma peça até ela para devolver, ou clique com o botão direito sobre uma peça da bancada para removê-la.</p>`);
   }
 
   if (S.registro){
@@ -1865,7 +2120,7 @@ function carregar(){
        chapa é peça perdida, então tudo volta para dentro dos limites.  */
     const W = bancada.clientWidth, H = alturaUtil();
     S.bancada.forEach(p => {
-      p.x = Math.max(0, Math.min(W - 132, p.x));
+      p.x = Math.max(0, Math.min(W - ladoPeca(), p.x));
       p.y = Math.max(0, Math.min(H - alturaPeca(), p.y));
     });
     localStorage.removeItem(CHAVE_ANTIGA);
@@ -1894,10 +2149,27 @@ function iniciar(){
       else if ($("codigoFundo").dataset.aberto === "1") fecharCodigo();
     }
   });
-  $("gavLista").addEventListener("click", ev => {
+  const gavLista = $("gavLista");
+  gavLista.addEventListener("click", ev => {
     const b = ev.target.closest(".gav-item");
     if (b) puxarPeca(b.dataset.id);
   });
+  /* Hover e foco abrem a ficha; rolar a lista fecha para a dica não ficar
+     pendurada num item que saiu de quadro.                                */
+  gavLista.addEventListener("pointerover", ev => {
+    const b = ev.target.closest(".gav-item");
+    if (b && !b.contains(ev.relatedTarget)) agendarDica(b.dataset.id, b);
+  });
+  gavLista.addEventListener("pointerout", ev => {
+    const b = ev.target.closest(".gav-item");
+    if (b && !b.contains(ev.relatedTarget)) fecharDica();
+  });
+  gavLista.addEventListener("focusin", ev => {
+    const b = ev.target.closest(".gav-item");
+    if (b) agendarDica(b.dataset.id, b);
+  });
+  gavLista.addEventListener("focusout", fecharDica);
+  gavLista.addEventListener("scroll", fecharDica, { passive:true });
   $("btnCodex").addEventListener("click", () => abrirCodigo(true));
   $("btnFechar").addEventListener("click", fecharCodigo);
   $("codigoFundo").addEventListener("click", fecharCodigo);

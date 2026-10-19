@@ -58,6 +58,11 @@ Paleta de eras (`cor` = traço/gráfico, `txt` = texto e fundo de chip):
 | VI · Digital | `#3fa9c4` | `#6fcbe0` |
 | VII · Espectro | `#d94f8c` | `#f07bb0` |
 
+**Regra:** texto sobre cor de era usa sempre o tom `txt` como fundo com texto
+`#17130f`. O tom escuro não serve de fundo para texto (terra cai a 3,4:1). O
+tom escuro só aparece em elementos gráficos: faixa da peça, quadrado de marco,
+ponto de cadeia, faísca.
+
 Pátina de material (`--p3`, só em sólidos de corpo único):
 
 | Família | hex | itens |
@@ -71,16 +76,11 @@ Pátina de material (`--p3`, só em sólidos de corpo único):
 | fogo | `#843f23` | fogo, forno |
 | óleo | `#6a5426` | óleo, pilha, bateria |
 | tinta | `#3f4f6a` | tinta |
-| digital | `#4a5a66` | silício, germânio, transistor, circuito, memória, microprocessador, monitores, celular, navegador, corpus, modelo |
+| digital | `#4a5a66` | silício, germânio, transistor, circuito, memória, microprocessador, monitor, celular, navegador, corpus, modelo |
 
 A pátina entra como terceiro slot do `traco()` e sai da mesma silhueta que
 o traço primário. No PDF ela vira tint sobre papel — `mistura(cor, branco,
 .82)` —, nunca bloco escuro.
-
-**Regra:** texto sobre cor de era usa sempre o tom `txt` como fundo com texto
-`#17130f`. O tom escuro não serve de fundo para texto (terra cai a 3,4:1). O
-tom escuro só aparece em elementos gráficos: faixa da peça, quadrado de marco,
-ponto de cadeia, faísca.
 
 ## 3. Tipografia
 
