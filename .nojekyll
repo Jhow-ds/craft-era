@@ -1,0 +1,2 @@
+Site estático puro: nada para o Jekyll processar. Este arquivo desliga o build do Jekyll
+no GitHub Pages, que estava falhando com "Page build failed.".
