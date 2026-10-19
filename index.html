@@ -1,0 +1,1852 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Craft Era</title>
+<meta name="description" content="Arraste componentes sobre a bancada e remonte, na ordem em que aconteceram, as invenções que construíram o mundo moderno.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Big+Shoulders+Display:wght@600;800&family=Fragment+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fundo:#14120f;
+  --chapa:#1a1714;
+  --chapa-alta:#211d19;
+  --chapa-fundo:#151210;
+  --grava:rgba(216,203,180,.05);
+  --trilho:#322c26;
+  --trilho-2:#3d362e;
+  --tinta:#ece6da;
+  --tinta-2:#b3a999;
+  --tinta-3:#8d8478;
+  --era:#b06a3b;
+  --era-texto:#e09a5c;
+  --r-peca:9px;
+  --r-painel:14px;
+  --lado-peca:132px;
+  --display:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --texto:"Archivo","Segoe UI",sans-serif;
+  --medida:"Fragment Mono","Consolas",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--fundo);color:var(--tinta);font-family:var(--texto);
+  overflow:hidden;-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--era-texto);color:#17130f}
+:focus-visible{outline:2px solid var(--era-texto);outline-offset:3px;border-radius:3px}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--chapa-fundo)}
+::-webkit-scrollbar-thumb{background:#3a332c;border:3px solid var(--chapa-fundo);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:#4d453b}
+
+/* ─────────── TRILHO ─────────── */
+.trilho{
+  grid-area:trilho;display:flex;align-items:center;gap:20px;
+  padding:0 30px;background:var(--chapa);border-bottom:1px solid var(--trilho);height:76px;
+}
+.marca{font-family:var(--display);font-weight:800;font-size:33px;letter-spacing:.005em;line-height:1;white-space:nowrap}
+.talho{display:block;width:1px;height:30px;background:var(--trilho);flex:0 0 1px}
+.eras{display:flex;gap:2px;align-items:center;min-width:0;overflow:hidden}
+.era-btn{
+  font-family:var(--medida);font-size:11px;letter-spacing:.06em;padding:6px 6px;white-space:nowrap;
+  color:var(--tinta-3);border-bottom:2px solid transparent;transition:color .18s,border-color .18s;
+}
+.era-btn[data-estado="feito"]{color:var(--tinta-2)}
+/* Fundo no tom claro da era: o tom escuro derrubava o contraste do texto
+   miúdo em terracota, bronze e ferro (abaixo de 4,5:1).                */
+.era-btn[data-estado="ativa"]{color:#17130f;background:var(--era-texto);border-bottom-color:var(--era-texto)}
+.era-btn:hover{color:var(--tinta-2)}
+.era-btn[data-estado="ativa"]:hover{color:#17130f}
+.acoes{display:flex;align-items:center;gap:14px;margin-left:auto;flex:0 0 auto}
+.contador{font-family:var(--medida);font-size:11.5px;color:var(--tinta-3);letter-spacing:.05em;white-space:nowrap}
+.contador b{color:var(--era-texto);font-weight:400}
+.btn-codex{
+  font-family:var(--medida);font-size:11px;letter-spacing:.12em;padding:8px 13px;
+  border:1px solid var(--trilho-2);color:var(--tinta-2);transition:border-color .18s,color .18s;
+}
+.btn-codex:hover{border-color:var(--era);color:var(--tinta)}
+
+/* ─────────── BANCADA ─────────── */
+.bancada{
+  grid-area:bancada;position:relative;overflow:hidden;background:var(--chapa);
+  /* Graduação da chapa: 40 × 40, desenhada como trama de 1px, não como
+     listras decorativas.                                                */
+  background-image:
+    linear-gradient(0deg,var(--grava) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grava) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.bancada::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(115% 85% at 32% 20%,rgba(255,240,212,.05),transparent 60%);
+}
+.selo{
+  position:absolute;left:28px;top:22px;font-family:var(--medida);font-size:10px;
+  letter-spacing:.15em;color:var(--tinta-3);z-index:1;pointer-events:none;
+  transition:opacity .4s;
+}
+.selo[data-sumido="1"]{opacity:0}
+.placa{position:absolute;inset:16px;pointer-events:none;z-index:0}
+.pcr{position:absolute;width:24px;height:24px;border:0 solid rgba(216,203,180,.14)}
+.pcr:nth-child(1){left:0;top:0;border-left-width:1px;border-top-width:1px}
+.pcr:nth-child(2){right:0;top:0;border-right-width:1px;border-top-width:1px}
+.pcr:nth-child(3){left:0;bottom:0;border-left-width:1px;border-bottom-width:1px}
+.pcr:nth-child(4){right:0;bottom:0;border-right-width:1px;border-bottom-width:1px}
+/* Marca de referência da chapa (datum target): círculo com ponto central.
+   Um cruzamento de 1 px lia como botão de "adicionar" no meio da bancada. */
+.datum{
+  position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;
+  border:1px solid rgba(216,203,180,.12);border-radius:50%;
+}
+.datum::before{
+  content:"";position:absolute;left:50%;top:50%;width:2px;height:2px;margin:-1px 0 0 -1px;
+  border-radius:50%;background:rgba(216,203,180,.2);
+}
+.marcos-placa{
+  position:absolute;right:30px;top:20px;z-index:1;display:flex;align-items:center;gap:11px;
+  pointer-events:none;
+}
+.mp-rot{font-family:var(--medida);font-size:9.5px;letter-spacing:.15em;color:var(--tinta-3)}
+.mp-lista{display:flex;gap:4px}
+.mp{width:13px;height:13px;border:1px solid #3f3831;display:block;transition:background .3s,border-color .3s}
+.mp[data-on="1"]{border-color:var(--era);background:var(--era)}
+
+/* ─────────── GAVETA DE PEÇAS ───────────
+   Bandeja de componentes já descobertos: a bancada consome as peças ao
+   fundir, então a gaveta é o que garante que nada se perca para sempre. */
+.gaveta{
+  position:absolute;left:0;right:0;bottom:0;height:58px;z-index:3;
+  display:flex;align-items:center;gap:16px;padding:0 30px 0 28px;
+  border-top:1px solid var(--trilho);
+  background:linear-gradient(180deg,rgba(26,22,18,.55),rgba(26,22,18,.92));
+}
+.gaveta[data-alvo="1"]{
+  border-top-color:var(--era);
+  background:linear-gradient(180deg,rgba(34,28,22,.92),rgba(34,28,22,.98));
+}
+.gaveta[data-alvo="1"] .gav-rot{color:var(--era-texto)}
+.gav-rot{
+  font-family:var(--medida);font-size:9.5px;letter-spacing:.16em;
+  color:var(--tinta-3);flex:0 0 auto;
+}
+.gav-lista{
+  display:flex;align-items:center;gap:1px;flex:1;min-width:0;height:100%;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;
+  scrollbar-color:#3f3831 transparent;
+}
+.gav-lista::-webkit-scrollbar{height:3px}
+.gav-lista::-webkit-scrollbar-thumb{background:#3f3831}
+.gav-item{
+  display:flex;align-items:center;gap:8px;padding:7px 11px;flex:0 0 auto;
+  font-size:11.5px;color:var(--tinta-2);white-space:nowrap;cursor:pointer;
+  border:0;border-bottom:1px solid transparent;background:none;
+  transition:color .15s,border-color .15s;font-family:inherit;
+  --p1:var(--tinta);--p2:#8d8478;
+}
+.gav-item:hover,.gav-item:focus-visible{color:var(--tinta);border-bottom-color:var(--era);outline:none}
+.gav-item svg{width:20px;height:20px;display:block;flex:0 0 20px}
+.gav-item:hover svg{--p1:var(--tinta)}
+.gav-nada{
+  font-family:var(--medida);font-size:9.5px;letter-spacing:.12em;color:var(--tinta-3);
+}
+
+/* ─────────── PEÇA ───────────
+   Gramática da chapa (OWN-WORLD): rótulo em condensada industrial ACIMA da
+   peça, medição em monoespaçada ABAIXO. O assento é o quadrado; a faixa da
+   era corre na aresta de cima dele. Nada de cartão em volta do texto.     */
+.peca{
+  --lado:var(--lado-peca);
+  position:absolute;width:var(--lado);padding:0;background:none;border:0;
+  cursor:grab;touch-action:none;
+  display:flex;flex-direction:column;align-items:center;
+  z-index:2;
+}
+.assento{
+  position:relative;width:var(--lado);height:var(--lado);flex:none;
+  background:var(--chapa-alta);border:1px solid var(--trilho);border-radius:var(--r-peca);
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s cubic-bezier(.16,1,.3,1),background .2s;
+}
+.peca:hover .assento{border-color:#4b4339}
+.peca.arrastando{cursor:grabbing;z-index:40}
+.peca.arrastando .assento{
+  border-color:var(--era);background:#262019;
+  box-shadow:0 18px 40px rgba(0,0,0,.55);
+}
+.peca.alvo .assento{border-color:var(--era);background:#262019}
+.peca.alvo .assento::after{
+  content:"";position:absolute;inset:-5px;
+  border:1px dashed color-mix(in srgb,var(--era) 55%,transparent);
+  border-radius:13px;pointer-events:none;
+}
+.peca.montando .assento{border-style:dashed;border-color:var(--era)}
+.peca.novidade{animation:chegar .5s cubic-bezier(.16,1,.3,1)}
+@keyframes chegar{
+  0%{transform:scale(.82);opacity:0}
+  100%{transform:scale(1);opacity:1}
+}
+.peca.nega{animation:negar .34s cubic-bezier(.16,1,.3,1)}
+@keyframes negar{
+  0%,100%{transform:translateX(0)}
+  22%{transform:translateX(-7px)}
+  58%{transform:translateX(6px)}
+}
+.faixa{position:absolute;left:0;top:0;width:100%;height:4px;border-radius:9px 9px 0 0;background:var(--era)}
+.grafico{display:flex;align-items:center;justify-content:center}
+.grafico svg{width:66px;height:66px;display:block}
+.nome{
+  width:100%;margin-bottom:7px;padding:0 3px;
+  font-family:var(--display);font-weight:600;font-size:13px;line-height:1.12;
+  letter-spacing:.02em;text-transform:uppercase;
+  text-align:center;color:var(--tinta-2);
+}
+.peca[data-didatico="0"] .nome{color:var(--tinta)}
+.medida{
+  margin-top:4px;padding:0 4px;
+  font-family:var(--medida);font-size:8.5px;letter-spacing:.07em;text-align:center;
+  color:var(--tinta-3);line-height:1.3;
+}
+.didatico{position:absolute;right:8px;top:11px;width:6px;height:6px;border-radius:50%;background:#5c544a}
+.cadeia{
+  position:absolute;top:10px;left:9px;display:flex;align-items:center;
+}
+.cadeia i{width:4px;height:4px;border-radius:50%;background:var(--era)}
+/* A montagem é uma corrente: os nós se ligam por segmentos de 1px, como a
+   ligação elo-nó do desenho de bancada — não uma fileira de pontos soltos. */
+.cadeia i + i{margin-left:6px;position:relative}
+.cadeia i + i::before{
+  content:"";position:absolute;right:100%;top:1px;width:6px;height:1px;
+  background:color-mix(in srgb,var(--era) 70%,transparent);
+}
+
+/* ─────────── LINHA DE UNIÃO ─────────── */
+.uniao{position:absolute;height:1px;z-index:1;pointer-events:none;transform-origin:left center;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--era) 85%,transparent),color-mix(in srgb,var(--era) 12%,transparent))}
+/* Olhal do fio: ponto sólido com anel de 1 px. Um halo de desfoque zero
+   seria decoração, não profundidade. */
+.uniao::after{
+  content:"";position:absolute;right:-3px;top:-3px;width:7px;height:7px;border-radius:50%;
+  background:var(--era);outline:1px solid color-mix(in srgb,var(--era) 34%,transparent);
+  outline-offset:2px;
+}
+.faisca{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--era);z-index:39;pointer-events:none}
+
+/* ─────────── NOTA ─────────── */
+.nota{
+  grid-area:nota;background:var(--chapa-fundo);border-left:1px solid var(--trilho);
+  padding:20px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;
+}
+.titulo-bloco{font-family:var(--medida);font-size:10px;letter-spacing:.15em;color:var(--tinta-3)}
+.tentativa{display:flex;flex-direction:column;gap:7px}
+.t-linha{display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--chapa-alta);border:1px solid var(--trilho)}
+.t-ponto{width:22px;height:22px;flex:0 0 22px;display:flex;align-items:center;justify-content:center}
+.t-ponto svg{width:22px;height:22px}
+.t-nome{flex:1;font-size:12.5px;color:var(--tinta-2);min-width:0}
+.t-nome .b{display:block;font-family:var(--medida);font-size:9px;color:var(--tinta-3);margin-top:2px;letter-spacing:.06em}
+.sem-nada{font-size:12.5px;color:var(--tinta-3);line-height:1.6;padding:10px 0}
+.registro{border-top:1px solid var(--trilho);padding-top:16px}
+.objetivo{border-top:1px solid var(--trilho);padding-top:16px;margin-top:auto}
+.obj-txt{font-size:12.5px;line-height:1.62;color:var(--tinta-3);margin-top:9px}
+.obj-txt b{color:var(--tinta-2);font-weight:500}
+.reg-nome{font-family:var(--display);font-weight:600;font-size:25px;line-height:1.06;margin-bottom:8px}
+.reg-meta{font-family:var(--medida);font-size:11px;color:var(--era-texto);letter-spacing:.05em;line-height:1.7}
+.reg-meta span{display:block;color:var(--tinta-3)}
+.reg-texto{font-size:12.5px;line-height:1.6;color:var(--tinta-2);margin-top:11px}
+.marcas{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
+.marca-p{
+  font-family:var(--medida);font-size:9px;letter-spacing:.08em;padding:4px 7px;
+  border:1px solid var(--trilho-2);color:var(--tinta-3);
+}
+.marca-p.on{border-color:var(--era);color:var(--era-texto)}
+/* Marcas desenhadas: nenhum glifo de fonte faz papel de ícone. */
+.mk{
+  display:inline-block;width:5px;height:5px;flex:0 0 5px;
+  vertical-align:.05em;margin-right:5px;
+}
+.mk-cheio{border-radius:50%;background:currentColor}
+.mk-vazio{border-radius:50%;border:1px solid currentColor}
+.mk-central{transform:rotate(45deg);background:currentColor}
+.reg-filho{
+  margin-top:13px;padding-top:12px;border-top:1px solid var(--trilho);
+  font-size:12px;line-height:1.6;color:var(--tinta-3);
+}
+.reg-filho b{color:var(--tinta-2);font-weight:500}
+
+/* ─────────── FITA DE RECEITA ─────────── */
+.fita{
+  grid-area:fita;background:var(--chapa-fundo);border-top:1px solid var(--trilho);
+  padding:19px 30px;display:flex;flex-direction:column;gap:13px;min-height:0;
+}
+.fita-cab{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.fita-nome{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:.01em;line-height:1.1}
+.fita-meta{font-family:var(--medida);font-size:10px;letter-spacing:.12em;color:var(--tinta-3)}
+.fita-nada{font-size:13px;color:var(--tinta-3);line-height:1.6}
+.passos{display:flex;align-items:center;flex-wrap:wrap;gap:0}
+.passo{
+  display:flex;align-items:center;gap:8px;padding:8px 14px;
+  background:var(--chapa-alta);border:1px solid var(--trilho);transition:border-color .2s,background .2s;
+}
+.passo-ord{font-family:var(--medida);font-size:9.5px;color:var(--tinta-3)}
+.passo.feito{border-color:color-mix(in srgb,var(--era) 45%,transparent)}
+.passo.feito .passo-ord{color:var(--era-texto)}
+.passo.atual{border-color:var(--era);background:#262019}
+.passo.atual .passo-nome{color:var(--tinta)}
+.passo-nome{font-size:13px;color:var(--tinta-2);white-space:nowrap}
+.seta{width:24px;height:1px;background:var(--trilho-2);flex:0 0 24px;position:relative}
+.mais{font-family:var(--medida);font-size:12px;color:var(--tinta-3);flex:0 0 18px;text-align:center}
+.seta::after{content:"";position:absolute;right:0;top:-3px;border-left:5px solid #4d453b;
+  border-top:3.5px solid transparent;border-bottom:3.5px solid transparent}
+.aguardando{
+  padding:8px 15px;border:1px dashed var(--trilho-2);
+  font-family:var(--medida);font-size:9.5px;letter-spacing:.1em;color:var(--tinta-3);
+}
+
+/* ─────────── AVISO ─────────── */
+.aviso{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+  background:#2b2520;border:1px solid var(--trilho-2);padding:10px 18px;
+  font-size:13px;color:var(--tinta);z-index:60;pointer-events:none;
+  opacity:0;transition:opacity .3s;box-shadow:0 12px 34px rgba(0,0,0,.5);
+}
+.aviso[data-visivel="1"]{opacity:1}
+
+/* ─────────── CÓDIGO ─────────── */
+.codigo-fundo{
+  position:fixed;inset:0;background:rgba(10,9,8,.76);z-index:70;
+  opacity:0;pointer-events:none;transition:opacity .26s;
+}
+.codigo-fundo[data-aberto="1"]{opacity:1;pointer-events:auto}
+.codigo{
+  position:fixed;right:0;top:0;bottom:0;width:min(460px,100%);
+  background:var(--chapa);border-left:1px solid var(--trilho);z-index:71;
+  transform:translateX(100%);transition:transform .34s cubic-bezier(.16,1,.3,1);
+  display:flex;flex-direction:column;
+}
+.codigo-fundo[data-aberto="1"] + .codigo{transform:translateX(0)}
+.codigo-cab{display:flex;align-items:center;gap:14px;padding:20px 22px;border-bottom:1px solid var(--trilho);flex:0 0 auto}
+.codigo-tit{font-family:var(--display);font-weight:600;font-size:22px}
+.fechar{font-family:var(--medida);font-size:10px;letter-spacing:.12em;color:var(--tinta-3);
+  border:1px solid var(--trilho-2);padding:7px 11px;margin-left:auto}
+.fechar:hover{color:var(--tinta);border-color:var(--era)}
+.codigo-corpo{overflow-y:auto;padding:8px 22px 26px}
+.era-secao{padding-top:20px}
+.era-cab{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.era-cor{width:11px;height:11px;flex:0 0 11px}
+.era-nome{font-family:var(--medida);font-size:10px;letter-spacing:.14em;color:var(--tinta-2)}
+.era-q{margin-left:auto;font-family:var(--medida);font-size:9.5px;color:var(--tinta-3)}
+.reg{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid #262019;align-items:flex-start}
+.reg-g{width:38px;height:38px;flex:0 0 38px;opacity:.95}
+.reg-g svg{width:38px;height:38px}
+.reg.bloq .reg-g{opacity:.2}
+.reg-t{flex:1;min-width:0}
+.reg-n{font-size:13px;color:var(--tinta);line-height:1.3}
+.reg.bloq .reg-n{color:var(--tinta-3)}
+.reg-d{font-family:var(--medida);font-size:9px;color:var(--tinta-3);margin-top:3px;letter-spacing:.05em}
+.reg.bloq .reg-d{color:#5c544a}
+.reg-star{margin-left:auto;color:var(--era-texto);border:1px solid var(--trilho-2);
+  padding:2px 5px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.reg-star .mk{margin-right:0}
+
+/* ─────────── REVELAÇÃO ─────────── */
+.revelacao{
+  position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,9,8,.8);opacity:0;pointer-events:none;transition:opacity .4s;
+  padding:24px;
+}
+.revelacao[data-visivel="1"]{opacity:1;pointer-events:auto}
+.rev-caixa{
+  background:var(--chapa-alta);border:1px solid var(--trilho-2);padding:34px 36px;max-width:560px;width:100%;
+  box-shadow:0 28px 70px rgba(0,0,0,.6);transform:translateY(10px);transition:transform .4s cubic-bezier(.16,1,.3,1);
+  position:relative;overflow:hidden;
+}
+.revelacao[data-visivel="1"] .rev-caixa{transform:translateY(0)}
+.rev-caixa::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--era)}
+.rev-corpo{display:flex;gap:20px;align-items:flex-start}
+.rev-g{width:80px;height:80px;flex:0 0 80px}
+.rev-g svg{width:80px;height:80px}
+.rev-nome{font-family:var(--display);font-weight:600;font-size:34px;line-height:1.02}
+.rev-meta{font-family:var(--medida);font-size:11.5px;color:var(--tinta-3);margin-top:10px;letter-spacing:.05em;line-height:1.7}
+.rev-era{display:block;color:var(--era-texto)}
+.rev-idade,.rev-central{white-space:nowrap}
+.rev-central{display:inline-block;margin-left:12px}
+.rev-meta .mk{margin-left:0}
+.rev-autor{display:block}
+.rev-texto{font-size:14px;line-height:1.68;color:var(--tinta-2);margin-top:18px}
+.rev-acoes{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.rev-btn{font-family:var(--medida);font-size:11px;letter-spacing:.12em;padding:10px 15px;border:1px solid var(--trilho-2);color:var(--tinta-2)}
+.rev-btn.p{background:var(--era-texto);border-color:var(--era-texto);color:#17130f}
+.rev-btn:hover{border-color:var(--era);color:var(--tinta)}
+.rev-btn.p:hover{color:#17130f;filter:brightness(1.08)}
+
+/* ─────────── GRADE ─────────── */
+.app{
+  display:grid;height:100vh;
+  grid-template-columns:minmax(0,1fr) 350px;
+  grid-template-rows:76px minmax(0,1fr) 164px;
+  grid-template-areas:"trilho trilho" "bancada nota" "fita fita";
+}
+.trilho,.bancada,.nota,.fita{min-width:0}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+@media (max-width:1180px){
+  .app{grid-template-columns:1fr;grid-template-rows:76px minmax(0,1fr) auto 164px;
+       grid-template-areas:"trilho" "bancada" "nota" "fita"}
+  .nota{border-left:none;border-top:1px solid var(--trilho);height:170px;flex:none}
+  .objetivo{display:none}
+  .talho{display:none}
+  .era-btn{padding:5px 7px;font-size:9px;letter-spacing:.06em}
+  .trilho{padding:0 20px;gap:16px}
+}
+@media (max-width:880px){
+  .eras{display:none}
+}
+@media (max-width:720px){
+  .app{grid-template-rows:64px minmax(0,1fr) auto 156px}
+  .trilho{height:64px;padding:0 16px;gap:14px}
+  .marca{font-size:26px}
+  .contador{display:none}
+  :root{--lado-peca:112px}
+  .nome{font-size:11.5px}
+  .grafico svg{width:54px;height:54px}
+  .fita{padding:14px 16px}
+  .gaveta{height:52px;padding:0 16px;gap:11px}
+  .gav-rot{display:none}
+  .selo{display:none}
+  .mp-rot{display:none}
+  .marcos-placa{right:16px;top:14px}
+  .gav-item{padding:6px 9px;font-size:11px}
+  .gav-item svg{width:18px;height:18px;flex:0 0 18px}
+}
+/* Aparelhos curtos no empilhado: a bancada precisava de 324 px úteis para as
+   duas fileiras de peças e tinha 225 px em 667 de altura — as quatro peças
+   caíam na mesma faixa. Coluna, fita, gaveta e assento encolhem juntos. */
+@media (max-width:1180px) and (max-height:780px){
+  :root{--lado-peca:100px}
+  .app{grid-template-rows:64px minmax(0,1fr) auto 124px}
+  .nota{height:100px;padding:13px 18px;gap:11px}
+  .nota .sem-nada,.nota .reg-texto{font-size:11px;line-height:1.5}
+  .fita{padding:13px 18px}
+  /* Sem altura para a frase de instrução: a coluna já a diz por extenso. */
+  .fita-nada{display:none}
+  .nome{font-size:11px}
+  .grafico svg{width:48px;height:48px}
+  .gaveta{height:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="trilho">
+    <div class="marca">Craft Era</div>
+    <div class="talho"></div>
+    <nav class="eras" id="eras" aria-label="Eras da história"></nav>
+    <div class="acoes">
+      <div class="contador">ERA <span id="cEra">1/7</span> · INVENÇÕES <b id="cDesc">0</b>/<span id="cTot">0</span></div>
+      <button class="btn-codex" id="btnCodex" aria-haspopup="dialog" aria-label="Código das invenções">CÓDIGO</button>
+    </div>
+  </header>
+
+  <main class="bancada" id="bancada">
+    <div class="placa" aria-hidden="true">
+      <span class="pcr"></span><span class="pcr"></span><span class="pcr"></span><span class="pcr"></span>
+      <span class="datum"></span>
+    </div>
+    <div class="selo" id="selo">BANCADA · ARRASTE UM COMPONENTE SOBRE O OUTRO</div>
+    <div class="marcos-placa">
+      <span class="mp-rot">MARCOS</span>
+      <span class="mp-lista" id="marcosPlaca" role="img" aria-label="Marcos históricos descobertos"></span>
+    </div>
+
+    <div class="gaveta" id="gaveta">
+      <span class="gav-rot">PEÇAS</span>
+      <div class="gav-lista" id="gavLista" role="list"
+           aria-label="Peças já descobertas. Clique para trazer uma cópia à bancada; arraste uma peça para cá para devolvê-la."></div>
+    </div>
+  </main>
+
+  <aside class="nota" id="nota" aria-label="Registro da tentativa"></aside>
+
+  <footer class="fita">
+    <div class="fita-cab">
+      <div class="fita-nome" id="fitaNome">Bancada vazia</div>
+      <div class="fita-meta" id="fitaMeta">NENHUMA TENTATIVA REGISTRADA</div>
+    </div>
+    <div id="fitaPassos" class="passos"></div>
+  </footer>
+
+</div>
+
+<div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+<div class="sr" id="sr" role="status" aria-live="polite"></div>
+
+<div class="codigo-fundo" id="codigoFundo"></div>
+<aside class="codigo" id="codigo" role="dialog" aria-modal="true" aria-label="Código das invenções" aria-hidden="true">
+  <div class="codigo-cab">
+    <div class="codigo-tit">Código das invenções</div>
+    <button class="fechar" id="btnFechar">FECHAR</button>
+  </div>
+  <div class="codigo-corpo" id="codigoCorpo"></div>
+</aside>
+
+<div class="revelacao" id="revelacao" role="dialog" aria-modal="true" aria-labelledby="revNome" data-visivel="0">
+  <div class="rev-caixa">
+    <div class="rev-corpo">
+      <div class="rev-g" id="revGrafico"></div>
+      <div>
+        <h2 class="rev-nome" id="revNome"></h2>
+        <div class="rev-meta" id="revMeta"></div>
+      </div>
+    </div>
+    <p class="rev-texto" id="revTexto"></p>
+    <div class="rev-acoes">
+      <button class="rev-btn p" id="revOk">CONTINUAR NA BANCADA</button>
+      <button class="rev-btn" id="revCodex">VER NO CÓDIGO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ═══════════════ ERAS ═══════════════ */
+const ERAS = [
+  { id:"terra",     nome:"I · TERRA",       curto:"TERRA",     cor:"#a2543a", txt:"#e08a5f" },
+  { id:"bronze",    nome:"II · BRONZE",     curto:"BRONZE",    cor:"#3f8578", txt:"#63bdae" },
+  { id:"ferro",     nome:"III · FERRO",     curto:"FERRO",     cor:"#6d7684", txt:"#9fa9b6" },
+  { id:"vapor",     nome:"IV · VAPOR",      curto:"VAPOR",     cor:"#b06a3b", txt:"#e09a5c" },
+  { id:"eletrica",  nome:"V · ELÉTRICA",    curto:"ELÉTRICA",  cor:"#c9a227", txt:"#e6c55c" },
+  { id:"digital",   nome:"VI · DIGITAL",    curto:"DIGITAL",   cor:"#3fa9c4", txt:"#6fcbe0" },
+  { id:"espectro",  nome:"VII · ESPECTRO",  curto:"ESPECTRO",  cor:"#d94f8c", txt:"#f07bb0" }
+];
+const ERA = Object.fromEntries(ERAS.map(e => [e.id, e]));
+
+/* ═══════════════ BIBLIOTECA DE TRAÇOS ═══════════════
+   Um único linguagem de desenho: contorno em dois tons, cantos e
+   pontas arredondados, viewBox 72×72.                              */
+const traco = (corpo) =>
+  `<svg viewBox="0 0 72 72" fill="none" stroke-linecap="round" stroke-linejoin="round">
+     <g stroke="var(--p1)" stroke-width="3.4">${corpo[0]}</g>
+     <g stroke="var(--p2)" stroke-width="2.3">${corpo[1]}</g>
+   </svg>`;
+
+/* ═══════════════ ITENS ═══════════════
+   ano/autor presentes  → marco real (fato datado)
+   ano ausente           → degrau didático (construção do jogo)     */
+const IT = {
+
+/* ── Terra ────────────────────────────────────────────── */
+madeira:{e:"terra",n:"Madeira",g:traco([
+  `<path d="M20 24h24a12 12 0 0 1 0 24H20Z"/><ellipse cx="20" cy="36" rx="7" ry="12"/>`,
+  `<ellipse cx="20" cy="36" rx="3.4" ry="6"/><path d="M31 24.5v23M44 26v20"/>`
+])},
+pedra:{e:"terra",n:"Pedra",g:traco([
+  `<path d="M14 46 22 22l16-6 16 10 4 20-16 10-16-4Z"/>`,
+  `<path d="M22 22 32 40l22-14M32 40 42 56"/>`
+])},
+fibra:{e:"terra",n:"Fibra",g:traco([
+  `<path d="M12 52c8-14 10-26 8-38M26 54c8-16 10-28 8-40M40 54c8-16 10-28 8-40M54 52c6-14 8-24 6-34"/>`,
+  `<path d="M20 26 32 40M34 26 46 40M48 26 58 38"/>`
+])},
+agua:{e:"terra",n:"Água",g:traco([
+  `<path d="M36 12c10 13 16 21 16 29a16 16 0 0 1-32 0c0-8 6-16 16-29Z"/>`,
+  `<path d="M26 42a10 10 0 0 0 8 10"/>`
+])},
+fogo:{e:"terra",n:"Fogo",g:traco([
+  `<path d="M36 10c3 10-4 13-4 20a6 6 0 0 0 12 0c0-5-4-8-3-13 6 5 11 12 11 20a16 16 0 0 1-32 0c0-11 8-18 16-27Z"/>`,
+  `<path d="M36 40a6 6 0 0 0 4-7"/><path d="M20 60h32"/>`
+])},
+vapor:{e:"terra",n:"Vapor",g:traco([
+  `<path d="M20 50c-7-7 7-9 0-17M36 50c-7-9 7-12 0-22M52 50c-7-7 7-9 0-17"/>`,
+  `<path d="M12 58h48"/>`
+])},
+areia:{e:"terra",n:"Areia",g:traco([
+  `<path d="M10 54h52"/><path d="M14 54c6-12 12-18 22-18s16 6 22 18Z"/>`,
+  `<circle cx="26" cy="46" r="1.7"/><circle cx="36" cy="42" r="1.7"/><circle cx="46" cy="46" r="1.7"/><circle cx="32" cy="50" r="1.5"/><circle cx="42" cy="51" r="1.5"/>`
+])},
+carvao:{e:"terra",n:"Carvão",g:traco([
+  `<path d="M14 50 18 32l14-6 12 8 2 14-12 8-14-2Z"/><path d="M44 56l4-12 10-2 6 10-6 8-12-2Z"/>`,
+  `<path d="M18 32 30 44l14-10M30 44l6 12"/>`
+])},
+cal:{e:"terra",n:"Cal",g:traco([
+  `<path d="M14 50h44l-6-10H20Z"/><path d="M24 40V26h24v14"/>`,
+  `<path d="M24 26h24M30 34h12"/>`
+])},
+forno:{e:"terra",n:"Forno",g:traco([
+  `<path d="M16 56V32a20 20 0 0 1 40 0v24"/><path d="M12 56h48"/>`,
+  `<path d="M26 40h20M30 32l4-8 4 8"/>`
+])},
+barra:{e:"terra",n:"Barra",g:traco([
+  `<path d="M18 30 54 22a5 5 0 0 1 6 5v6a5 5 0 0 1-5 5L19 46a5 5 0 0 1-6-5v-6a5 5 0 0 1 5-5Z"/>`,
+  `<path d="M56 25v11M20 33l-2 11"/>`
+])},
+corda:{e:"terra",n:"Corda",g:traco([
+  `<path d="M16 12c6 8 6 12 0 20s-6 12 0 20M36 12c6 8 6 12 0 20s-6 12 0 20M56 12c6 8 6 12 0 20s-6 12 0 20"/>`,
+  `<path d="M16 22 36 32l20-10M16 42l20 10 20-10"/>`
+])},
+machado:{e:"terra",n:"Machado",g:traco([
+  `<path d="M40 14c10 0 17 6 19 14-5 4-11 6-17 6-4 0-8-1-11-4 1-9 4-14 9-16Z"/><path d="M18 22 30 58"/>`,
+  `<path d="M40 14v20"/>`
+])},
+tabua:{e:"terra",n:"Tábua",g:traco([
+  `<path d="M10 26h52v9H10zM10 39h52v9H10zM10 52h52v6H10z"/>`,
+  `<path d="M10 35h52M10 48h52"/>`
+])},
+vidro:{e:"terra",ano:"c. 1500 a.C.",autor:"Mesopotâmia e Egito",n:"Vidro",g:traco([
+  `<path d="M26 12h20v14l8 26a12 12 0 0 1-11 16H29a12 12 0 0 1-11-16l8-26Z"/>`,
+  `<path d="M26 26h20M34 12v14M24 48h24"/>`
+])},
+roda:{e:"terra",ano:"c. 3500 a.C.",autor:"Uruk, Suméria",star:1,n:"Roda",
+  txt:"A primeira roda foi um torno de oleiro. Só depois, e por causa dele, alguém imaginou uma roda que girasse no lugar para levar carga. Toda a engenharia de transporte — carroça, trem, bicicleta, rover — é descendente direta deste aro de madeira.",
+  g:traco([
+  `<circle cx="36" cy="36" r="24"/><circle cx="36" cy="36" r="6"/>`,
+  `<path d="M36 12v18M36 42v18M12 36h18M42 36h18M19 19l12.5 12.5M40.5 40.5 53 53M53 19 40.5 31.5M31.5 40.5 19 53"/>`
+])},
+
+/* ── Bronze ───────────────────────────────────────────── */
+mineral:{e:"bronze",n:"Minério",g:traco([
+  `<path d="M14 46 20 24l16-6 18 10 4 20-16 8-16-4Z"/>`,
+  `<path d="M28 30l10 4-6 8M46 34l6 6"/>`
+])},
+cobre:{e:"bronze",n:"Cobre",g:traco([
+  `<path d="M12 44 46 34l8 8-34 10Z"/><path d="M12 44v8l34 10 8-8v-12"/>`,
+  `<path d="M30 40l6 3M22 42l6 3"/>`
+])},
+estanho:{e:"bronze",n:"Estanho",g:traco([
+  `<path d="M22 34h28l-5 18H27Z"/><path d="M22 34V28h28v6"/>`,
+  `<path d="M29 41h14"/>`
+])},
+bronze:{e:"bronze",ano:"c. 3300 a.C.",n:"Bronze",g:traco([
+  `<path d="M16 42 44 34l10 9-28 8Z"/><path d="M16 42v9l28 9 10-9v-8"/>`,
+  `<path d="M26 46l16-5M22 51l16-5"/>`
+])},
+oleo:{e:"bronze",n:"Óleo",g:traco([
+  `<path d="M36 14v10"/><path d="M36 24c11 0 18 8 18 16a18 18 0 0 1-36 0c0-8 7-16 18-16Z"/>`,
+  `<path d="M26 42a10 10 0 0 0 7 8"/>`
+])},
+tinta:{e:"bronze",ano:"c. 300 d.C.",autor:"Roma",n:"Tinta de impressão",g:traco([
+  `<path d="M22 26h28v30a6 6 0 0 1-6 6H28a6 6 0 0 1-6-6Z"/><path d="M22 38h28"/>`,
+  `<path d="M32 62V52h8v10M30 14c2 5 6 6 6 6s4-1 6-6"/>`
+])},
+papel:{e:"bronze",ano:"c. 105",autor:"China",star:1,n:"Papel",
+  txt:"A história tradicional dá a Cai Lun, o corte imperial, o mérito de ter melhorado o registro oficial em 105. O que ele fez foi moer fibra de planta em água e secá-la sobre uma tela. O papel não mudou o que se escrevia: mudou quem podia escrever, porque uma folha de pergaminho custava o mesmo que um mês de salário.",
+  g:traco([
+  `<path d="M14 18h32l12 12v24H14Z"/><path d="M46 18v12h12"/>`,
+  `<path d="M21 38h30M21 44h22"/>`
+])},
+fio:{e:"bronze",n:"Fio de cobre",g:traco([
+  `<circle cx="36" cy="36" r="20"/><circle cx="36" cy="36" r="13"/><circle cx="36" cy="36" r="6"/>`,
+  `<path d="M36 16v40M16 36h40"/>`
+])},
+tecido:{e:"bronze",n:"Tecido",g:traco([
+  `<path d="M12 24h48v24H12Z"/>`,
+  `<path d="M22 24v24M32 24v24M42 24v24M52 24v24M12 32h48M12 40h48"/>`
+])},
+tear:{e:"bronze",n:"Tear",g:traco([
+  `<path d="M16 12h6v48h-6zM50 12h6v48h-6zM16 18h40M16 54h40"/>`,
+  `<path d="M28 18v36M36 18v36M44 18v36"/>`
+])},
+agulha:{e:"ferro",n:"Agulha",g:traco([
+  `<path d="M58 14 26 52l-6 8 10-3 4-6Z"/><path d="M30 50l8-8"/>`,
+  `<ellipse cx="53" cy="19" rx="4" ry="6" transform="rotate(45 53 19)"/>`
+])},
+cartao:{e:"bronze",n:"Cartão",g:traco([
+  `<path d="M14 22h44v30H14Z"/><path d="M14 30h44M14 44h44"/>`,
+  `<path d="M22 36h28"/>`
+])},
+"cartao-perfurado":{e:"vapor",ano:"1804",autor:"Jacquard",n:"Cartão perfurado",
+  txt:"Jacquard prendeu cartões furados à tear: cada fileira de furos era uma instrução, e cada furo erguia um fio. A máquina deixou de obedecer ao tecelão e passou a obedecer ao papel. Esse é o ancestral direto do cartão perfurado que contou o censo americano de 1890.",
+  g:traco([
+  `<path d="M16 16h40v40H16Z"/>`,
+  `<g fill="var(--p2)" stroke="none"><circle cx="26" cy="26" r="2.4"/><circle cx="36" cy="26" r="2.4"/><circle cx="46" cy="26" r="2.4"/><circle cx="26" cy="36" r="2.4"/><circle cx="36" cy="36" r="2.4"/><circle cx="46" cy="46" r="2.4"/><circle cx="26" cy="46" r="2.4"/><circle cx="46" cy="36" r="2.4"/></g>`
+])},
+"tear-de-jacquard":{e:"vapor",ano:"1804",autor:"Joseph-Marie Jacquard, Lyon",star:1,n:"Tear de Jacquard",
+  txt:"O tear que executava desenhos em vez de repetir um gesto. Jacquard não inventou a programação: tomou emprestada a prática dos capuzes de tecelão e a transformou em tear. A cadeia de cartões que ele usava é, função por função, a mesma que Charles Babbage descreveria vinte anos depois para a sua Máquina Analítica.",
+  g:traco([
+  `<path d="M14 14h6v44h-6zM52 14h6v44h-6zM14 20h44"/>`,
+  `<path d="M26 20v10M36 20v6M46 20v10"/><path d="M26 30h20v18H26Z"/><circle cx="30" cy="36" r="2"/><circle cx="38" cy="42" r="2"/><circle cx="44" cy="36" r="2"/>`
+])},
+tipo:{e:"ferro",n:"Tipo de metal",g:traco([
+  `<path d="M22 26h28v26H22Z"/><path d="M22 26 28 18h16l6 8"/>`,
+  `<path d="M28 38h16M36 32v12"/>`
+])},
+estrutura:{e:"ferro",n:"Estrutura de prensa",g:traco([
+  `<path d="M16 12h8v48h-8zM48 12h8v48h-8zM16 12h40M16 60h40"/>`,
+  `<path d="M24 20h24M36 20v12"/>`
+])},
+"prensa":{e:"ferro",ano:"c. 1450",autor:"Johannes Gutenberg, Mainz",star:1,n:"Prensa tipográfica",
+  txt:"Gutenberg não inventou a prensa, nem a tinta, nem o papel, nem os tipos metálicos. Vieram todos da China, do mundo islâmico e das oficinas ao redor de Mainz. O que ele fez foi juntá-los e transformar atrito em tinta impressa. O resultado tirou o livro do manuscrito e o pôs na mão de qualquer um que soubesse ler — e é daí que vem tudo o que esta bancada vai construir.",
+  g:traco([
+  `<path d="M18 10h6v50h-6zM48 10h6v50h-6zM18 10h36"/><path d="M26 26h20v12H26Z"/><path d="M20 60h32v6H20z"/>`,
+  `<path d="M36 10v16"/><path d="M24 48h24"/>`
+])},
+
+/* ── Ferro ────────────────────────────────────────────── */
+ferro:{e:"ferro",ano:"c. 1200 a.C.",n:"Ferro",g:traco([
+  `<path d="M14 42 50 32l8 8-36 10Z"/><path d="M14 42v8l36 10 8-8v-8"/>`,
+  `<path d="M28 44l14-4M24 50l14-4"/>`
+])},
+cristal:{e:"ferro",n:"Cristal",g:traco([
+  `<path d="M36 10 54 26l-8 32H26l-8-32Z"/>`,
+  `<path d="M36 10v20M18 26l18 4 18-4M26 58l10-28 10 28"/>`
+])},
+lente:{e:"ferro",ano:"c. 1285",autor:"Itália",n:"Lente",g:traco([
+  `<circle cx="25" cy="36" r="12"/><circle cx="47" cy="36" r="12"/><path d="M37 34h-1M13 30l-7-4M59 30l7-4"/>`,
+  `<path d="M20 32a7 7 0 0 1 5-5M42 32a7 7 0 0 1 5-5"/>`
+])},
+aba:{e:"ferro",n:"Aba de estante",g:traco([
+  `<path d="M12 20h48v8H12z"/><path d="M12 28h10v30H12zM60 28h-10v30h10z"/>`,
+  `<path d="M22 20v-6M50 20v-6"/>`
+])},
+livro:{e:"ferro",n:"Livro",g:traco([
+  `<path d="M12 18h20l4 5 4-5h20v36H40l-4 5-4-5H12Z"/><path d="M36 23v36"/>`,
+  `<path d="M18 28h10M18 34h10M44 28h10M44 34h10"/>`
+])},
+alfabeto:{e:"ferro",ano:"1450",autor:"Gutenberg",n:"Alfabeto de metal",g:traco([
+  `<path d="M16 30h14v18H16zM42 30h14v18H42z"/><path d="M30 48V18h12l2 8H30"/>`,
+  `<path d="M20 34v10M48 34v10M32 30h8"/>`
+])},
+"codice":{e:"ferro",n:"Códice",g:traco([
+  `<path d="M14 16h44v40H14Z"/>`,
+  `<path d="M22 26h28M22 34h28M22 42h18"/>`
+])},
+
+/* ── Vapor ────────────────────────────────────────────── */
+magnete:{e:"vapor",n:"Magneto",g:traco([
+  `<path d="M20 56V32a16 16 0 0 1 32 0v24"/>`,
+  `<path d="M20 56h10M42 56h10M28 16v10M44 16v10"/>`
+])},
+pilha:{e:"vapor",ano:"1800",autor:"Alessandro Volta",n:"Pilha",g:traco([
+  `<path d="M20 52h32v6H20z"/>`,
+  `<path d="M26 52V34M32 52V30M38 52V30M44 52V34"/><path d="M20 26h32"/>`
+])},
+eletricidade:{e:"vapor",ano:"1820",autor:"Hans Christian Ørsted",n:"Eletricidade",g:traco([
+  `<path d="M40 10 22 40h12l-6 22 20-32H36Z"/>`,
+  `<path d="M14 18h10M14 32h8M58 18h-10M58 32h-8"/>`
+])},
+motor:{e:"vapor",ano:"1831",autor:"Michael Faraday",n:"Motor",g:traco([
+  `<circle cx="36" cy="36" r="22"/><circle cx="36" cy="36" r="8"/>`,
+  `<path d="M36 14v14M36 44v14M14 36h14M44 36h14"/>`
+])},
+valvula:{e:"vapor",ano:"1904",autor:"John Ambrose Fleming",n:"Válvula",g:traco([
+  `<path d="M24 10h24v34a12 12 0 0 1-24 0Z"/><path d="M20 56h32"/>`,
+  `<path d="M30 20h12M30 34h12"/><path d="M36 44v8"/>`
+])},
+telegrafo:{e:"vapor",ano:"1837",autor:"Samuel Morse",n:"Telégrafo",g:traco([
+  `<path d="M16 46h40v10H16z"/><path d="M56 44a6 6 0 0 1 6 6"/>`,
+  `<path d="M26 46V26a6 6 0 0 1 12 0v20M44 46V32"/>`
+])},
+"codigo-morse":{e:"vapor",ano:"1838",autor:"Samuel Morse",n:"Código Morse",g:traco([
+  `<circle cx="15" cy="28" r="4"/><circle cx="15" cy="48" r="4"/><path d="M28 28h16M52 28h6M28 48h10"/>`,
+  `<path d="M10 38h52"/>`
+])},
+"maquina-de-escrever":{e:"vapor",ano:"1874",autor:"Sholes e Glidden",n:"Máquina de escrever",g:traco([
+  `<path d="M12 34h48v22H12z"/><path d="M24 34V16h24v18"/>`,
+  `<path d="M18 42h8M30 42h8M42 42h8M18 50h8M30 50h8M42 50h8"/><path d="M30 26h12"/>`
+])},
+caldeira:{e:"vapor",n:"Caldeira",g:traco([
+  `<path d="M16 28h32v28H16z"/><path d="M48 36h8a6 6 0 0 1 0 12h-8"/>`,
+  `<path d="M16 28 24 18h16l8 10"/><path d="M36 18v-8"/>`
+])},
+pistao:{e:"vapor",n:"Pistão",g:traco([
+  `<path d="M30 16h12v40H30z"/>`,
+  `<path d="M22 16h28M22 56h28"/>`
+])},
+"maquina-a-vapor":{e:"vapor",ano:"1712 · 1769",autor:"Newcomen · Watt",n:"Máquina a vapor",g:traco([
+  `<circle cx="36" cy="38" r="18"/><circle cx="36" cy="38" r="5"/>`,
+  `<path d="M36 20v13M36 43v13M18 38h13M41 38h13"/><path d="M48 14v6M42 12h12"/>`
+])},
+navio:{e:"vapor",n:"Navio à vela",g:traco([
+  `<path d="M10 48h52l-8 12H18Z"/>`,
+  `<path d="M36 48V12M36 14l16 20-16 8M34 18L20 34l14 6"/>`
+])},
+"navio-a-vapor":{e:"vapor",n:"Navio a vapor",g:traco([
+  `<path d="M10 46h52l-8 14H18Z"/><path d="M22 46V32h24v14"/>`,
+  `<path d="M46 34h10v12"/><path d="M52 34v-8"/>`
+])},
+trilho:{e:"vapor",ano:"1825",autor:"George Stephenson",n:"Trilho",g:traco([
+  `<path d="M8 40h56"/>`,
+  `<path d="M14 32v20M26 32v20M38 32v20M50 32v20M10 36h52M10 48h52"/>`
+])},
+carrinho:{e:"vapor",n:"Carroça",g:traco([
+  `<path d="M12 32h34l6 8H12Z"/>`,
+  `<circle cx="24" cy="50" r="8"/><circle cx="48" cy="50" r="8"/><path d="M46 32V16"/>`
+])},
+locomotiva:{e:"vapor",ano:"1825",autor:"George Stephenson",n:"Locomotiva",g:traco([
+  `<path d="M10 44h50v12H10z"/><path d="M24 44V26h20v18"/>`,
+  `<path d="M44 44V16h10v28"/><circle cx="26" cy="56" r="6"/><circle cx="44" cy="56" r="6"/>`
+])},
+trem:{e:"vapor",n:"Trem",g:traco([
+  `<path d="M8 42h56v10H8z"/><path d="M12 30h20v12H12zM38 30h16v12H38z"/>`,
+  `<circle cx="18" cy="52" r="5"/><circle cx="34" cy="52" r="5"/><circle cx="50" cy="52" r="5"/>`
+])},
+
+/* ── Elétrica ─────────────────────────────────────────── */
+lampada:{e:"eletrica",ano:"1879",autor:"Thomas Edison",n:"Lâmpada",g:traco([
+  `<circle cx="36" cy="30" r="16"/>`,
+  `<path d="M30 46h12v8H30zM28 56h16"/><path d="M36 14v-6M22 30h-6M56 30h-6"/><path d="M32 22l-3 14h10l-3-14"/>`
+])},
+telefone:{e:"eletrica",ano:"1876",autor:"Alexander Graham Bell",n:"Telefone",g:traco([
+  `<path d="M18 16h10v40H18z"/><path d="M28 26h20a8 8 0 0 1 8 8v22H36V44H28"/>`,
+  `<path d="M22 22h2M22 30h2M22 38h2M22 46h2"/>`
+])},
+antena:{e:"eletrica",n:"Antena",g:traco([
+  `<path d="M36 60V22"/>`,
+  `<path d="M22 26 36 14l14 12M14 40l22-20 22 20"/>`
+])},
+radio:{e:"eletrica",ano:"1895",autor:"Guglielmo Marconi",n:"Rádio",g:traco([
+  `<path d="M16 26h40v32H16Z"/>`,
+  `<circle cx="28" cy="40" r="7"/><circle cx="48" cy="40" r="7"/><path d="M56 26V12"/>`
+])},
+bateria:{e:"eletrica",ano:"1991",autor:"Sony / Asahi",n:"Bateria de íon-lítio",g:traco([
+  `<path d="M18 22h32v30H18Z"/><path d="M26 14h16v8H26z"/>`,
+  `<path d="M32 28l-6 12h7l-4 10 9-14h-7Z"/>`
+])},
+contador:{e:"eletrica",ano:"1890",autor:"Herman Hollerith",n:"Contador de cartões",g:traco([
+  `<path d="M14 20h44v34H14Z"/>`,
+  `<path d="M22 28h28v14H22Z"/><circle cx="50" cy="14" r="6"/><path d="M22 46h12"/>`
+])},
+silicio:{e:"eletrica",ano:"1953",autor:"DuPont",n:"Silício",g:traco([
+  `<path d="M36 10 58 24 36 38 14 24Z"/>`,
+  `<path d="M14 24v24l22 14 22-14V24"/><path d="M36 38v24"/><circle cx="36" cy="24" r="2.6"/>`
+])},
+germanio:{e:"eletrica",n:"Germânio",g:traco([
+  `<path d="M36 12 54 26l-8 30H26l-8-30Z"/>`,
+  `<path d="M26 56l10-30 10 30M30 44h12"/>`
+])},
+transistor:{e:"eletrica",ano:"1947",autor:"Bardeen, Brattain, Shockley",n:"Transistor",g:traco([
+  `<circle cx="36" cy="36" r="20"/>`,
+  `<path d="M26 44V28M36 50V22M46 44V28M22 28h28"/>`
+])},
+circuito:{e:"eletrica",n:"Circuito",g:traco([
+  `<path d="M16 16h40v40H16Z"/>`,
+  `<path d="M16 28h14v12h12V28h14M28 44v12"/><circle cx="16" cy="28" r="2.6"/><circle cx="56" cy="28" r="2.6"/>`
+])},
+"circuito-integrado":{e:"eletrica",ano:"1958",autor:"Jack Kilby",n:"Circuito integrado",g:traco([
+  `<path d="M18 22h36v28H18Z"/>`,
+  `<path d="M24 22v-6M34 22v-6M44 22v-6M24 50v6M34 50v6M44 50v6M18 30h-6M18 42h-6M54 30h6M54 42h6"/><path d="M26 36h20"/>`
+])},
+tv:{e:"eletrica",ano:"1936",autor:"Marconi-EMI",n:"Televisão",g:traco([
+  `<path d="M14 18h44v32H14Z"/><path d="M26 58h20M36 50v8"/>`,
+  `<path d="M14 32h44"/><circle cx="26" cy="25" r="3"/><circle cx="36" cy="25" r="3"/>`
+])},
+laser:{e:"eletrica",ano:"1960",autor:"Theodore Maiman",n:"Laser",g:traco([
+  `<path d="M10 30h26v12H10z"/>`,
+  `<path d="M36 36h20"/><path d="M56 36l-8-6v12Z"/><path d="M14 30v-8h10"/>`
+])},
+memoria:{e:"eletrica",ano:"1970",autor:"Intel 1103",n:"Memória",g:traco([
+  `<path d="M18 22h36v28H18Z"/>`,
+  `<path d="M24 22v-6M34 22v-6M44 22v-6M24 50v6M34 50v6M44 50v6M18 30h-6M18 42h-6M54 30h6M54 42h6"/>`
+])},
+
+/* ── Digital ──────────────────────────────────────────── */
+microprocessador:{e:"digital",ano:"1971",autor:"Hoff e Faggin, Intel",n:"Microprocessador",g:traco([
+  `<path d="M16 20h40v32H16Z"/>`,
+  `<path d="M16 26H8M16 36H8M16 46H8M56 26h8M56 36h8M56 46h8M24 20v-6M36 20v-6M48 20v-6M24 52v6M36 52v6M48 52v6"/><path d="M28 36h16"/>`
+])},
+teclado:{e:"digital",n:"Teclado",g:traco([
+  `<path d="M10 24h52v26H10Z"/>`,
+  `<path d="M18 31h8M32 31h8M46 31h8M18 39h8M32 39h8M46 39h8M24 46h24"/>`
+])},
+monitor:{e:"digital",n:"Monitor",g:traco([
+  `<path d="M14 16h44v30H14Z"/><path d="M28 54h16M36 46v8"/>`,
+  `<path d="M22 32h12M22 38h20"/>`
+])},
+computador:{e:"digital",n:"Computador",g:traco([
+  `<path d="M20 10h32v52H20Z"/>`,
+  `<path d="M20 22h32M27 32h18M27 40h18M27 48h10"/><circle cx="46" cy="16" r="2.2"/>`
+])},
+"computador-pessoal":{e:"digital",ano:"1974",autor:"Ed Roberts · Altair 8800",star:1,n:"Computador pessoal",
+  txt:"O Altair 8800 chegou ao mercado em 1974 sem teclado, sem tela e sem case de plástico: era uma caixa de chaves numa caixa de metal. Ainda assim, alguém o comprou. Um ano depois veio o Altair BASIC; dois anos depois, Bill Gates e Paul Allen escreveram o interpretador. A máquina cabia numa mesa — foi isso que mudou.",
+  g:traco([
+  `<path d="M14 22h44v28H14Z"/>`,
+  `<path d="M14 30h44"/><circle cx="24" cy="42" r="3"/><path d="M38 40h14M38 46h14"/>`
+])},
+codigo:{e:"digital",n:"Código",g:traco([
+  `<path d="M26 22 12 36l14 14"/><path d="M46 22l14 14-14 14"/><path d="M40 16 32 56"/>`,
+  `<path d="M20 62h32"/>`
+])},
+fluxograma:{e:"digital",n:"Fluxograma",g:traco([
+  `<rect x="22" y="12" width="28" height="14"/><rect x="10" y="46" width="20" height="14"/><rect x="42" y="46" width="20" height="14"/>`,
+  `<path d="M36 26v8h-16v12M36 26v8h16v12"/>`
+])},
+algoritmo:{e:"digital",ano:"820",autor:"Al-Khwarizmi",n:"Algoritmo",g:traco([
+  `<path d="M18 18h10v36H18zM44 18h10v36H44z"/>`,
+  `<path d="M28 24h16M28 36h16M28 48h16"/>`
+])},
+roteador:{e:"digital",ano:"1984",autor:"Cisco",n:"Roteador",g:traco([
+  `<path d="M12 26h48v22H12Z"/>`,
+  `<path d="M12 34h-6M18 48v8M54 48v8"/><circle cx="24" cy="37" r="3"/><circle cx="38" cy="37" r="3"/><circle cx="52" cy="37" r="3"/>`
+])},
+protocolo:{e:"digital",n:"Protocolo",g:traco([
+  `<path d="M10 22h20v28H10zM42 22h20v28H42z"/>`,
+  `<path d="M30 36h12"/><path d="M38 30l6 6-6 6"/>`
+])},
+internet:{e:"digital",ano:"1983",autor:"Cerf e Kahn · TCP/IP",star:1,n:"Internet",
+  txt:"A internet não nasceu em 1983 nem é um produto de uma empresa. Nasceu de uma guerra: três redes que não queriam falar com as outras aceitaram cortar caminho e conversar por TCP/IP. A ARPANET já existia desde 1969, antes do computador pessoal. A grande virada não foi técnica — foi a decisão de tornar o protocolo público.",
+  g:traco([
+  `<circle cx="36" cy="36" r="24"/>`,
+  `<path d="M12 36h48M36 12c8 8 8 40 0 48M36 12c-8 8-8 40 0 48"/>`
+])},
+hipertexto:{e:"digital",n:"Hipertexto",g:traco([
+  `<rect x="12" y="18" width="26" height="32"/><rect x="34" y="28" width="26" height="32"/>`,
+  `<path d="M18 26h14M18 32h14M18 38h8M40 36h14M40 42h10"/>`
+])},
+"world-wide-web":{e:"digital",ano:"1991",autor:"Tim Berners-Lee, CERN",n:"World Wide Web",
+  txt:"Berners-Lee precisava de um jeito de mostrar um documento a outro que não fosse o documento. A Web é uma camada de endereçamento e links em cima da internet que já existia — e ele a liberou sem pedir royalties. Ela só decolou em 1993, quando o Mosaic transformou o hyperlink em algo que se clica com o mouse.",
+  g:traco([
+  `<circle cx="36" cy="36" r="24"/>`,
+  `<path d="M12 36h48M36 12c8 8 8 40 0 48M36 12c-8 8-8 40 0 48"/><path d="M22 26l28 20M50 26 22 46"/>`
+])},
+navegador:{e:"digital",ano:"1993",autor:"Marc Andreessen · Mosaic",n:"Navegador",
+  txt:"Antes do navegador, a web só se via em terminais de texto. O Mosaic transformou a página em imagem e o hyperlink em clique — e em dois anos o número de servidores na internet multiplicou por cem. A World Wide Web já existia havia dois anos quando isso aconteceu.",
+  g:traco([
+  `<path d="M12 14h48v40H12Z"/>`,
+  `<path d="M12 24h48"/><circle cx="18" cy="19" r="2"/><circle cx="25" cy="19" r="2"/><path d="M32 19h22"/><path d="M20 34h12M20 42h20"/>`
+])},
+cilindro:{e:"digital",n:"Cilindro",g:traco([
+  `<ellipse cx="36" cy="20" rx="20" ry="8"/><path d="M16 20v32a20 8 0 0 0 40 0V20"/>`,
+  `<path d="M16 36a20 8 0 0 0 40 0"/>`
+])},
+impressora:{e:"digital",n:"Impressora",g:traco([
+  `<path d="M12 24h48v26H12z"/><path d="M22 50V34h28v16"/>`,
+  `<path d="M22 24v-8h28v8"/><circle cx="52" cy="32" r="2.6"/>`
+])},
+"impressora-3d":{e:"digital",ano:"2008",autor:"Joe DeSimone · RepRap",star:1,n:"Impressora 3D",
+  txt:"A impressora 3D é uma prensa de Gutenberg com a matéria-prima trocada. Em vez de aplicar tinta a uma superfície pronta, ela deposita camada sobre camada de material — e a superfície não é o papel, é a própria forma. A ideia é tão antiga quanto a máquina de Charles Babbage, que projetou em 1843 um aparelho capaz de imprimir peças tridimensionais. Só faltava uma ferramenta que depositasse meio milímetro de plástico de cada vez.",
+  g:traco([
+  `<path d="M14 18h44v38H14Z"/>`,
+  `<path d="M28 18v-6M44 18v-6"/><path d="M26 42h20"/><path d="M32 42v-8M40 42v-14"/><path d="M20 56v-8M52 56v-8"/>`
+])},
+tela:{e:"digital",ano:"1968",autor:"Bell Labs",n:"Tela de cristal líquido",g:traco([
+  `<path d="M12 18h48v32H12Z"/><path d="M24 58h24"/>`,
+  `<path d="M20 28h20M20 36h28"/>`
+])},
+condutor:{e:"digital",ano:"1965",autor:"Ito",n:"Condutor transparente",g:traco([
+  `<path d="M14 24h44v22H14Z"/>`,
+  `<path d="M20 35h8M28 35h8M36 35h8M44 35h8M24 24v22M48 24v22"/>`
+])},
+"tela-sensivel":{e:"digital",ano:"1973",autor:"Bouldin",n:"Tela sensível ao toque",g:traco([
+  `<path d="M14 12h44v44H14Z"/>`,
+  `<path d="M26 30h20v16H26z"/><circle cx="36" cy="24" r="2.6"/><path d="M36 46v6"/>`
+])},
+celular:{e:"digital",ano:"1983",autor:"Motorola DynaTAC",n:"Celular",g:traco([
+  `<path d="M20 12h32v48H20Z"/>`,
+  `<path d="M26 20h20v20H26z"/><path d="M28 48h4M34 48h4M40 48h4M28 54h4M34 54h4M40 54h4"/>`
+])},
+smartphone:{e:"digital",ano:"2007",autor:"iPhone",star:1,n:"Smartphone",
+  txt:"Um telefone com computador dentro — e foi essa a virada. Durante trinta anos o celular tinha teclado e o computador não cabia no bolso; em 2007 os dois viraram o mesmo aparelho. Nenhuma peça dele era nova: o processador vinha de 1971, a tela de toque de 1965, a bateria de 1991. A única novidade foi a decisão de juntar as três em dez centímetros.",
+  g:traco([
+  `<path d="M22 8h28v56H22Z"/>`,
+  `<path d="M22 16h28v40H22Z"/><path d="M32 12h8"/><circle cx="36" cy="60" r="2.4"/>`
+])},
+
+/* ── Espectro ─────────────────────────────────────────── */
+neuronio:{e:"espectro",ano:"1943",autor:"McCulloch e Pitts",n:"Neurônio",g:traco([
+  `<circle cx="36" cy="36" r="13"/>`,
+  `<path d="M23 30 12 22M23 36H10M23 42l-11 8M49 30l11-8M49 36h13M49 42l11 8"/>`
+])},
+sinapse:{e:"espectro",n:"Sinapse",g:traco([
+  `<circle cx="22" cy="36" r="8"/>`,
+  `<path d="M30 36h10M40 30h12M40 42h12M52 24v24"/>`
+])},
+"rede-neural":{e:"eletrica",ano:"1943 · 1986",autor:"McCulloch e Pitts · Rumelhart e Hinton",star:1,n:"Rede neural",
+  txt:"McCulloch e Pitts desenharam um neurônio como um circuito lógico com limiar: se as entradas somam o bastante, a saída dispara. Não era biologia — era matemática binária com nome de biologia. Três décadas depois, Rumelhart e Hinton treinaram uma pilha desses nós num processador e provaram que ela aprendia a errar menos. O artigo deles de 1986 está entre os mais citados da história da ciência.",
+  g:traco([
+  `<circle cx="16" cy="18" r="6"/><circle cx="16" cy="54" r="6"/><circle cx="56" cy="36" r="7"/>`,
+  `<path d="M22 18 49 34M22 54 49 38M16 24v24"/><circle cx="36" cy="36" r="4"/>`
+])},
+texto:{e:"espectro",n:"Texto",g:traco([
+  `<path d="M12 18h48v34H12Z"/>`,
+  `<path d="M20 28h32M20 36h32M20 44h20"/>`
+])},
+corpus:{e:"espectro",ano:"1952",autor:"Claude Shannon",n:"Volume de dados",g:traco([
+  `<ellipse cx="36" cy="18" rx="22" ry="7"/><path d="M14 18v36a22 7 0 0 0 44 0V18"/>`,
+  `<path d="M14 30a22 7 0 0 0 44 0M14 42a22 7 0 0 0 44 0"/>`
+])},
+treinamento:{e:"espectro",ano:"2012",autor:"AlexNet",n:"Treinamento",g:traco([
+  `<path d="M10 50h52"/>`,
+  `<path d="M14 50V36M24 50V28M34 50V32M44 50V20M54 50V14"/><path d="M12 14 56 8"/>`
+])},
+atencao:{e:"espectro",ano:"2017",autor:"Vaswani et al.",n:"Atenção",g:traco([
+  `<circle cx="36" cy="36" r="6"/>`,
+  `<path d="M36 30V14M36 42v16M30 36H16M42 36h14M32 32 20 20M40 40l12 12M40 32l12-12M32 40 20 52"/>`
+])},
+transformer:{e:"espectro",ano:"2017",autor:"Vaswani et al.",n:"Transformer",g:traco([
+  `<path d="M14 20h44v32H14Z"/>`,
+  `<path d="M14 30h44M14 42h44"/><path d="M22 20v32M36 20v32M50 20v32"/>`
+])},
+modelo:{e:"espectro",n:"Modelo",g:traco([
+  `<ellipse cx="36" cy="20" rx="20" ry="7"/><path d="M16 20v20a20 7 0 0 0 40 0V20"/>`,
+  `<path d="M16 32a20 7 0 0 0 40 0"/><path d="M36 47v9"/>`
+])},
+"modelo-linguagem":{e:"espectro",n:"Modelo de linguagem",g:traco([
+  `<circle cx="28" cy="30" r="14"/>`,
+  `<path d="M42 30h18M52 22l8 8-8 8"/><circle cx="28" cy="30" r="5"/>`
+])},
+"ia-generativa":{e:"espectro",ano:"2022",autor:"OpenAI · ChatGPT",star:1,n:"IA generativa",
+  txt:"Ela não sabe nada que você não lhe tenha mostrado. Foi treinada em uma quantidade inimaginável de texto e aprendeu a continuação estatística: qual palavra vem depois desta. Toda a engenharia de duzentos anos — a prensa que multiplicou os livros, o computador que guardou os dados, a internet que os juntou — existiu para chegar a este gesto de completar uma frase. A IA generativa não inventou nada: herdou tudo.",
+  g:traco([
+  `<path d="M36 12 44 30l18 6-18 6-8 18-8-18-18-6 18-6Z"/>`,
+  `<circle cx="36" cy="36" r="3"/><path d="M12 20l6 4M60 20l-6 4M12 52l6-4M60 52l-6-4"/>`
+])},
+};
+/* `computador` não é um item independente na árvore: entra na receita de
+   três passos do computador pessoal. Fica declarado aqui, como os demais. */
+IT.computador = {
+  e:"digital", n:"Computador", g:traco([
+    `<path d="M14 20h44v30H14Z"/>`,
+    `<path d="M14 28h44"/><path d="M22 38h28M22 44h16"/>`
+  ])
+};
+
+/* ═══════════════ RECEITAS ═══════════════
+   2 ingredientes  → ordem livre
+   3 ou mais         → ordem obrigatória                                */
+const R = (out, ...seq) => ({ out, seq });
+const RECEITAS = [
+  /* Terra */
+  R("fogo","madeira","pedra"),
+  R("areia","pedra","agua"),
+  R("carvao","madeira","forno"),
+  R("cal","pedra","fogo"),
+  R("vapor","fogo","agua"),
+  R("forno","cal","areia"),
+  R("barra","madeira","fogo"),
+  R("corda","fibra","madeira"),
+  R("machado","pedra","barra"),
+  R("tabua","madeira","machado"),
+  R("vidro","areia","fogo"),
+  R("roda","tabua","barra"),
+  /* Bronze */
+  R("mineral","cal","pedra"),
+  R("cobre","mineral","fogo"),
+  R("estanho","mineral","cal"),
+  R("bronze","cobre","estanho"),
+  R("oleo","fibra","fogo"),
+  R("tinta","carvao","oleo"),
+  R("papel","fibra","agua"),
+  R("fio","barra","cobre"),
+  R("tecido","corda","corda"),
+  R("tear","madeira","tecido"),
+  R("agulha","barra","ferro"),
+  R("cartao","papel","cal"),
+  R("cartao-perfurado","cartao","agulha"),
+  R("tear-de-jacquard","tear","cartao-perfurado"),
+  R("tipo","bronze","cal"),
+  R("estrutura","tabua","cobre"),
+  R("prensa","estrutura","tipo","tinta","papel"),
+  /* Ferro */
+  R("ferro","carvao","cal"),
+  R("cristal","areia","cobre"),
+  R("lente","vidro","cristal"),
+  R("aba","tabua","corda"),
+  R("codice","papel","corda"),
+  R("livro","codice","corda"),
+  R("alfabeto","livro","bronze"),
+  /* Vapor */
+  R("magnete","ferro","pedra"),
+  R("pilha","bronze","agua"),
+  R("eletricidade","magnete","fio"),
+  R("motor","eletricidade","magnete"),
+  R("valvula","vidro","eletricidade"),
+  R("telegrafo","fio","pilha"),
+  R("codigo-morse","telegrafo","alfabeto"),
+  R("maquina-de-escrever","tear","telegrafo"),
+  R("caldeira","ferro","agua"),
+  R("pistao","barra","vapor"),
+  R("maquina-a-vapor","caldeira","pistao"),
+  R("navio","tabua","fio"),
+  R("navio-a-vapor","navio","maquina-a-vapor"),
+  R("trilho","ferro","cal"),
+  R("carrinho","roda","barra"),
+  R("locomotiva","maquina-a-vapor","trilho"),
+  R("trem","locomotiva","carrinho"),
+  R("antena","fio","barra"),
+  /* Elétrica */
+  R("lampada","valvula","fio"),
+  R("telefone","telegrafo","pilha"),
+  R("radio","eletricidade","antena"),
+  R("bateria","pilha","ferro"),
+  R("contador","aba","cartao-perfurado"),
+  R("silicio","areia","carvao"),
+  R("germanio","cristal","cal"),
+  R("transistor","germanio","silicio"),
+  R("circuito","transistor","fio"),
+  R("circuito-integrado","circuito","silicio"),
+  R("memoria","silicio","cobre"),
+  R("microprocessador","circuito-integrado","cobre"),
+  R("tv","valvula","lampada"),
+  R("laser","valvula","cristal"),
+  /* Digital */
+  R("teclado","alfabeto","circuito"),
+  R("monitor","tv","circuito"),
+  R("computador-pessoal","computador","teclado","monitor"),
+  R("fluxograma","papel","circuito"),
+  R("codigo","alfabeto","fluxograma"),
+  R("algoritmo","codigo","circuito"),
+  R("roteador","circuito","fio"),
+  R("protocolo","roteador","codigo"),
+  R("internet","roteador","protocolo"),
+  R("hipertexto","internet","livro"),
+  R("world-wide-web","internet","hipertexto"),
+  R("navegador","world-wide-web","computador-pessoal"),
+  R("cilindro","barra","bronze"),
+  R("impressora","maquina-de-escrever","cilindro"),
+  R("impressora-3d","impressora","motor","laser"),
+  R("tela","cristal","eletricidade"),
+  R("condutor","vidro","estanho"),
+  R("tela-sensivel","tela","condutor"),
+  R("celular","telefone","radio","bateria"),
+  R("smartphone","computador-pessoal","tela-sensivel","bateria"),
+  /* Espectro */
+  R("neuronio","transistor","circuito"),
+  R("sinapse","neuronio","fio"),
+  R("rede-neural","neuronio","sinapse","neuronio"),
+  R("texto","alfabeto","livro"),
+  R("corpus","texto","computador-pessoal"),
+  R("treinamento","corpus","rede-neural"),
+  R("atencao","sinapse","algoritmo"),
+  R("transformer","atencao","rede-neural"),
+  R("modelo","treinamento","codigo"),
+  R("modelo-linguagem","modelo","texto"),
+  R("ia-generativa","modelo-linguagem","transformer")
+];
+
+/* `computador` é montado em dois passos a partir de componentes:
+   processador e memória. */
+RECEITAS.push(R("computador","microprocessador","memoria"));
+
+const INICIAIS = ["madeira","pedra","fibra","agua"];
+
+/* Marcos na ordem em que aconteceram — é esta a linha que o jogador
+   percorre de fato. Dez caixas gravadas na chapa, uma por marco.       */
+const MARCOS = [
+  "roda", "papel", "prensa", "tear-de-jacquard", "rede-neural",
+  "computador-pessoal", "internet", "smartphone", "impressora-3d", "ia-generativa"
+];
+
+/* ═══════════════ ÍNDICES ═══════════════ */
+const chave = (s) => s.length <= 2 ? [...s].sort().join("|") : s.join(">");
+const MAPA = new Map();
+const ORDENADAS = [];
+for (const r of RECEITAS){
+  ORDENADAS.push(r);
+  if (!MAPA.has(chave(r.seq))) MAPA.set(chave(r.seq), r);
+}
+/* A comparação percorre `s` (o que já foi montado), nunca a receita
+   inteira — senão os passos que faltam nunca conferem.                 */
+const podeSerPrefixo = (s) =>
+  ORDENADAS.some(r => r.seq.length > s.length && s.every((v,i) => v === r.seq[i]));
+
+function proximoPassoDe(s){
+  for (const r of ORDENADAS) if (r.seq.length > s.length && s.every((v,i) => v === r.seq[i]))
+    return { r, passo: s.length };
+  return null;
+}
+
+/* ═══════════════ ESTADO ═══════════════ */
+const CHAVE = "craft-era-v1";
+/* Chave anterior à renomeação do projeto: o progresso de quem já jogava
+   continua valendo e é migrado na primeira abertura.                    */
+const CHAVE_ANTIGA = "invencao-infinita-v1";
+const S = {
+  feitos: new Set(),
+  bancada: [],
+  tentativa: [],
+  registro: null,
+  montagem: null,
+  eraAtual: "terra",
+  seq: 0
+};
+
+const $ = (id) => document.getElementById(id);
+const bancada = $("bancada"), nota = $("nota"), aviso = $("aviso"), sr = $("sr");
+const fitaNome = $("fitaNome"), fitaMeta = $("fitaMeta"), fitaPassos = $("fitaPassos");
+
+/* ═══════════════ CORES DE TRAÇO ═══════════════
+   Uma única linguagem de desenho para todas as peças: contorno claro e
+   detalhe cinza, herdados por variável CSS do próprio elemento.        */
+
+/* ═══════════════ PEÇAS ═══════════════ */
+const MARGEM = 16;
+function novaPeca(id, x, y, cadeia){
+  return { id, cadeia: cadeia || [id], x, y, uid: ++S.seq, montando:false };
+}
+
+function criarEl(p){
+  const d = IT[p.id];
+  const el = document.createElement("div");
+  el.className = "peca";
+  el.dataset.uid = p.uid;
+  el.dataset.didatico = d.ano ? "0" : "1";
+  el.tabIndex = 0;
+  el.setAttribute("role", "button");
+  el.style.left = p.x + "px";
+  el.style.top  = p.y + "px";
+
+  const rotulo = d.ano ? `${d.n}, ${d.ano}` : `${d.n}, construção didática`;
+  el.setAttribute("aria-label", rotulo + (p.cadeia.length > 1 ? `, montagem em ${p.cadeia.length} etapas` : ""));
+
+  el.innerHTML =
+    `<div class="nome">${d.n}</div>` +
+    `<div class="assento">` +
+      `<div class="faixa" style="background:${ERA[d.e].cor}"></div>` +
+      (p.cadeia.length > 1 ? `<div class="cadeia">${p.cadeia.map(() => "<i></i>").join("")}</div>` : "") +
+      `<div class="grafico">${d.g}</div>` +
+      (d.ano ? "" : `<div class="didatico" title="Construção didática do jogo, não um marco histórico"></div>`) +
+    `</div>` +
+    `<div class="medida">${d.ano ? d.ano.toUpperCase() : "CONSTRUÇÃO DIDÁTICA"}</div>`;
+
+  el.style.setProperty("--p1", "var(--tinta)");
+  el.style.setProperty("--p2", "#8d8478");
+  return el;
+}
+
+function desenhar(){
+  bancada.querySelectorAll(".peca,.uniao,.faisca").forEach(n => n.remove());
+  for (const p of S.bancada){
+    const el = criarEl(p);
+    if (p.montando) el.classList.add("montando");
+    if (p.novo) { el.classList.add("novidade"); p.novo = false; }
+    p.el = el;
+    bancada.appendChild(el);
+  }
+  ligarPecas();
+  renderGaveta();
+}
+
+const elDe = (uid) => S.bancada.find(p => p.uid === uid);
+
+/* Altura útil da bancada: desconta a gaveta do rodapé para que nenhuma
+   peça possa ser arrastada para trás dela.                              */
+function alturaUtil(){
+  const g = $("gaveta");
+  return bancada.clientHeight - (g ? g.offsetHeight : 0);
+}
+
+/* Largura do assento, lida do CSS: 132 no desktop, 112 no celular, 100 em
+   telas curtas. O JS não deve carregar esses números duplicados.          */
+function ladoPeca(){
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--lado-peca"));
+  return v > 0 ? v : 132;
+}
+
+/* Altura real de uma peça no CSS corrente, medida no pior caso (rótulo de
+   duas linhas e medida de duas linhas). Sem isso o semeio chutava a altura e
+   duas peças caíam na mesma faixa em telas curtas.                        */
+function alturaPeca(){
+  const sonda = document.createElement("div");
+  sonda.className = "peca";
+  sonda.setAttribute("aria-hidden", "true");
+  sonda.style.cssText = "left:-9999px;top:0;visibility:hidden";
+  sonda.innerHTML = '<div class="nome">ESTRUTURA DE PRENSA</div>' +
+    '<div class="assento"><div class="faixa"></div><div class="grafico"></div></div>' +
+    '<div class="medida">CONSTRUÇÃO DIDÁTICA</div>';
+  bancada.appendChild(sonda);
+  const h = sonda.offsetHeight;
+  sonda.remove();
+  return h || ladoPeca() + 46;
+}
+
+/* ═══════════════ GAVETA ═══════════════
+   Fundir consome as duas peças. Sem a gaveta, o jogador ficaria sem
+   madeira depois da primeira combinação e a partida morreria ali.      */
+function renderGaveta(){
+  const lista = $("gavLista");
+  const ids = [...INICIAIS, ...[...S.feitos].filter(id => !INICIAIS.includes(id))];
+  if (!ids.length){
+    lista.innerHTML = `<span class="gav-nada">NADA AINDA</span>`;
+    return;
+  }
+  lista.innerHTML = ids.map(id => {
+    const d = IT[id];
+    return `<button class="gav-item" type="button" data-id="${id}"
+      title="Trazer outra peça de ${d.n} para a bancada">${d.g}<span>${d.n}</span></button>`;
+  }).join("");
+}
+
+/* Devolver uma peça à gaveta é o único jeito de abrir espaço sem fundir —
+   sem isso a bancada entope e a partida trava.                          */
+function devolverPeca(p){
+  S.bancada = S.bancada.filter(o => o !== p);
+  desenhar();
+  falar(`${IT[p.id].n} devolvido à gaveta.`);
+}
+
+function puxarPeca(id){
+  if (S.bancada.length >= 24){
+    mostrarAviso("Bancada cheia — devolva uma peça à gaveta ou funda duas.");
+    falar("A bancada está cheia. Devolva uma peça à gaveta arrastando-a para baixo.");
+    return;
+  }
+  const W = bancada.clientWidth, H = alturaUtil();
+  const larg = ladoPeca(), alt = alturaPeca();
+  const faixa = Math.max(0, H - FAIXA_TOPO - alt);
+  let x = Math.min(W - larg - 16, Math.max(16, W / 2 - larg / 2));
+  let y = Math.min(H - alt - 12, Math.max(FAIXA_TOPO + 10, H / 2 - alt / 2));
+  for (let k = 0; k < POSICOES.length; k++){
+    const [fx, fy] = POSICOES[(S.bancada.length + k) % POSICOES.length];
+    const cx = Math.min(W - larg - 16, Math.max(16, fx * W - larg / 2));
+    const cy = Math.min(H - alt - 12, Math.max(FAIXA_TOPO + 10, FAIXA_TOPO + fy * faixa));
+    if (S.bancada.every(o => Math.hypot(o.x - cx, o.y - cy) > 118)){ x = cx; y = cy; break; }
+  }
+  const p = novaPeca(id, Math.round(x), Math.round(y));
+  p.novo = true;
+  S.bancada.push(p);
+  desenhar();
+  falar(`${IT[id].n} trazido para a bancada.`);
+}
+
+/* ═══════════════ POSIÇÕES INICIAIS ═══════════════
+   Peças espalhadas como componentes sobre uma chapa — nunca uma grade
+   de cartões alinhados, que é justamente o desenho que o mundo recusa. */
+const FAIXA_TOPO = 46;
+const POSICOES = [
+  [.12,.16],[.36,.80],[.60,.08],[.82,.58],
+  [.22,.72],[.66,.74],[.46,.30],[.90,.20]
+];
+function semear(){
+  const W = bancada.clientWidth, H = alturaUtil();
+  const estreito = W < 640;
+  const larg = ladoPeca(), alt = alturaPeca();
+  S.bancada = INICIAIS.map((id, i) => {
+    let x, y;
+    if (estreito){
+      /* Duas fileiras distribuídas na altura útil, com uma faixa de topo
+         curta (a etiqueta da bancada some no celular e os quadrados de
+         marcos param em 27 px).                                         */
+      const col = i % 2, lin = Math.floor(i / 2);
+      const linhas = Math.ceil(INICIAIS.length / 2);
+      const sobra = Math.max(0, H - 30 - alt * linhas);
+      const passo = alt + (linhas > 1 ? Math.min(12, sobra / (linhas - 1)) : 0);
+      x = (W * (col + .5)) / 2 - larg / 2;
+      y = Math.min(H - alt - 2, 30 + lin * passo);
+    } else {
+      const [fx, fy] = POSICOES[i % POSICOES.length];
+      const faixa = Math.max(0, H - FAIXA_TOPO - alt);
+      x = Math.min(W - larg - 16, Math.max(16, fx * W - larg / 2));
+      y = Math.min(H - alt - 20, Math.max(FAIXA_TOPO + 10, FAIXA_TOPO + fy * faixa));
+    }
+    return novaPeca(id, Math.round(x), Math.round(y));
+  });
+}
+
+/* ═══════════════ ARRASTAR ═══════════════ */
+let arraste = null, uniaoEl = null;
+
+function ligarPecas(){
+  S.bancada.forEach(p => {
+    if (!p.el) return;
+    p.el.addEventListener("pointerdown", pegarPeca);
+    p.el.addEventListener("keydown", tecladoPeca);
+  });
+}
+
+function dentro(x, y){
+  const r = bancada.getBoundingClientRect();
+  return { x: x - r.left, y: y - r.top };
+}
+
+function pegarPeca(ev){
+  const uid = +ev.currentTarget.dataset.uid;
+  const p = elDe(uid);
+  if (!p) return;
+  ev.preventDefault();
+  try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
+  ev.currentTarget.focus();
+  const pt = dentro(ev.clientX, ev.clientY);
+  arraste = { p, dx: pt.x - p.x, dy: pt.y - p.y, movido:false, alvo:null };
+  ev.currentTarget.classList.add("arrastando");
+  uniaoEl = document.createElement("div");
+  uniaoEl.className = "uniao";
+  document.body.appendChild(uniaoEl);
+  ev.currentTarget.addEventListener("pointermove", mover);
+  ev.currentTarget.addEventListener("pointerup", soltar, { once:true });
+  ev.currentTarget.addEventListener("pointercancel", soltar, { once:true });
+}
+
+function mover(ev){
+  if (!arraste) return;
+  const pt = dentro(ev.clientX, ev.clientY);
+  arraste.p.x = Math.max(0, Math.min(bancada.clientWidth - ladoPeca(), pt.x - arraste.dx));
+  const altPeca = arraste.p.el.offsetHeight || 140;
+  arraste.p.y = Math.max(0, Math.min(alturaUtil() - altPeca, pt.y - arraste.dy));
+  arraste.p.el.style.left = arraste.p.x + "px";
+  arraste.p.el.style.top  = arraste.p.y + "px";
+  arraste.movido = true;
+  $("selo").dataset.sumido = "1";
+
+  const alvo = melhorAlvo(arraste.p);
+  arraste.alvo = alvo;
+  S.bancada.forEach(o => { if (o.el) o.el.classList.toggle("alvo", o === alvo); });
+  desenharUniao(alvo);
+  $("gaveta").dataset.alvo = ev.clientY >= $("gaveta").getBoundingClientRect().top ? "1" : "0";
+}
+
+const centro = (p) => {
+  const a = p.el && p.el.querySelector(".assento");
+  if (!a) return { x: p.x + 66, y: p.y + 66 };
+  return { x: p.x + a.offsetLeft + a.offsetWidth / 2, y: p.y + a.offsetTop + a.offsetHeight / 2 };
+};
+
+function melhorAlvo(origem){
+  let melhor = null, dist = 96;
+  for (const o of S.bancada){
+    if (o === origem) continue;
+    const a = centro(origem), b = centro(o);
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (d < dist){ dist = d; melhor = o; }
+  }
+  return melhor;
+}
+
+function desenharUniao(alvo){
+  if (!uniaoEl) return;
+  if (!alvo){ uniaoEl.style.width = "0px"; return; }
+  const r = bancada.getBoundingClientRect();
+  const a = centro(arraste.p), b = centro(alvo);
+  const x = Math.min(a.x, b.x), y = Math.min(a.y, b.y);
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const ang = Math.atan2(dy, dx);
+  uniaoEl.style.left = (r.left + x) + "px";
+  uniaoEl.style.top  = (r.top + y - .5) + "px";
+  uniaoEl.style.width = Math.hypot(dx, dy) + "px";
+  uniaoEl.style.transform = `rotate(${ang}rad)`;
+}
+
+function soltar(ev){
+  if (!arraste) return;
+  const { p, alvo, movido } = arraste;
+  const gav = $("gaveta");
+  const sobreGaveta = movido && ev.clientY >= gav.getBoundingClientRect().top;
+  gav.dataset.alvo = "0";
+  p.el.classList.remove("arrastando");
+  S.bancada.forEach(o => { if (o.el) o.el.classList.remove("alvo"); });
+  if (uniaoEl){ uniaoEl.remove(); uniaoEl = null; }
+  arraste = null;
+  if (sobreGaveta) devolverPeca(p);
+  else if (alvo) engatar(alvo, p);
+  else if (movido) repositionar(p);
+}
+
+function repositionar(p){
+  p.x = Math.max(0, Math.min(bancada.clientWidth  - 132, p.x));
+  p.y = Math.max(0, Math.min(alturaUtil() - (p.el?.offsetHeight || 140), p.y));
+}
+
+/* ═══════════════ TECLADO ═══════════════ */
+function tecladoPeca(ev){
+  const p = elDe(+ev.currentTarget.dataset.uid);
+  if (!p) return;
+  const passo = 16;
+  const teclas = {
+    ArrowLeft:[-passo,0], ArrowRight:[passo,0], ArrowUp:[0,-passo], ArrowDown:[0,passo]
+  };
+  if (teclas[ev.key]){
+    ev.preventDefault();
+    p.x = Math.max(0, Math.min(bancada.clientWidth  - 132, p.x + teclas[ev.key][0]));
+    p.y = Math.max(0, Math.min(alturaUtil() - (p.el?.offsetHeight || 140), p.y + teclas[ev.key][1]));
+    p.el.style.left = p.x + "px"; p.el.style.top = p.y + "px";
+    return;
+  }
+  if (ev.key === "Enter" || ev.key === " "){
+    ev.preventDefault();
+    const sel = S.bancada.find(o => o.el === document.activeElement);
+    if (sel === p){
+      p.selec = true; p.el.style.borderColor = "var(--era)";
+      falar(`${IT[p.id].n} levantado. Escolha outro componente e pressione Enter para engatar.`);
+    } else if (S.bancada.some(o => o.selec)){
+      const origem = S.bancada.find(o => o.selec);
+      origem.selec = false; origem.el.style.borderColor = "";
+      engatar(p, origem);
+    }
+  }
+}
+
+/* ═══════════════ COMBINAÇÃO ═══════════════ */
+/* Fundir duas peças. A ordem dos ingredientes de uma receita longa não
+   pode depender de qual peça foi arrastada: o jogador não tem como saber
+   quem é "base". Então testamos as duas concatenações — a montagem em
+   curso (cadeia maior) vem primeiro, e no empate vale a que fecha
+   receita ou prefixo de receita.                                       */
+function engatar(base, entrada){
+  const A = base.cadeia, B = entrada.cadeia;
+  const cands = A.length === B.length
+    ? [[...A, ...B], [...B, ...A]]
+    : [A.length > B.length ? [...A, ...B] : [...B, ...A]];
+
+  S.tentativa = [
+    { id: base.id, cadeia: base.cadeia.slice() },
+    { id: entrada.id, cadeia: entrada.cadeia.slice() }
+  ];
+
+  let seq = null, r = null, prox = null;
+  for (const s of cands){
+    const rr = MAPA.get(chave(s));
+    if (rr){ seq = s; r = rr; break; }
+    const pp = proximoPassoDe(s);
+    if (pp && !prox){ seq = s; prox = pp; }
+  }
+  if (!seq) seq = cands[0];
+
+  if (r) return fundir(r, seq, base, entrada);
+  if (prox) return montarEm(prox, seq, base, entrada);
+  falhar(base, entrada);
+}
+
+function fundir(r, seq, base, entrada){
+  const item = IT[r.out];
+  S.feitos.add(r.out);
+  S.montagem = { r, feitos: r.seq.length };
+
+  const x = Math.round((base.x + entrada.x) / 2) - 66;
+  const y = Math.round((base.y + entrada.y) / 2) - 40;
+
+  faisca(base.x + 66, base.y + 40);
+
+  S.bancada = S.bancada.filter(p => p !== base && p !== entrada);
+  const nova = novaPeca(r.out, x, y);
+  nova.novo = true;
+  S.bancada.push(nova);
+
+  S.registro = r.out;
+  S.tentativa = [];
+  desenhar();
+  atualizarTrilho();
+  renderNota();
+  renderFita();
+
+  falar(`${item.n}. ${item.ano ? item.ano + ", " + (item.autor || "") + "." : "Construção didática."}`);
+
+  if (item.star) setTimeout(() => revelar(r.out), 340);
+  return nova;
+}
+
+function montarEm(prox, seq, base, entrada){
+  S.montagem = { r: prox.r, feitos: seq.length };
+  S.bancada = S.bancada.filter(p => p !== base && p !== entrada);
+  const nova = novaPeca(seq[seq.length - 1], base.x, base.y, seq);
+  nova.montando = true;
+  S.bancada.push(nova);
+  S.registro = null;
+  desenhar();
+  renderNota();
+  renderFita();
+  const passo = IT[prox.r.seq[prox.passo]];
+  falar(`Montagem em ${seq.length} de ${prox.r.seq.length}. Falta ${passo.n}.`);
+  mostrarAviso(`Montagem ${seq.length}/${prox.r.seq.length} — falta ${passo.n}`);
+}
+
+function falhar(base, entrada){
+  base.el.classList.add("nega");
+  entrada.el.classList.add("nega");
+  setTimeout(() => { base.el.classList.remove("nega"); entrada.el.classList.remove("nega"); }, 360);
+  renderNota();
+  renderFita();
+  const a = IT[base.id].n, b = IT[entrada.id].n;
+  falar(`${a} e ${b} não se combinam.`);
+  mostrarAviso(`${a} + ${b} não se combinam`);
+}
+
+function faisca(px, py){
+  const r = bancada.getBoundingClientRect();
+  const f = document.createElement("div");
+  f.className = "faisca";
+  f.style.left = (r.left + px - 4) + "px";
+  f.style.top  = (r.top + py - 4) + "px";
+  document.body.appendChild(f);
+  f.animate(
+    [{ transform:"scale(1)", opacity:1 }, { transform:"scale(9)", opacity:0 }],
+    { duration:620, easing:"cubic-bezier(.16,1,.3,1)" }
+  ).onfinish = () => f.remove();
+}
+
+/* ═══════════════ AVISO ═══════════════ */
+let avisoT;
+function mostrarAviso(txt){
+  aviso.textContent = txt;
+  aviso.dataset.visivel = "1";
+  clearTimeout(avisoT);
+  avisoT = setTimeout(() => { aviso.dataset.visivel = "0"; }, 2100);
+}
+function falar(txt){ sr.textContent = txt; }
+
+/* ═══════════════ TRILHO ═══════════════ */
+function atualizarTrilho(){
+  const nav = $("eras");
+  const feito = id => {
+    const i = ERAS.findIndex(e => e.id === id);
+    return ERAS.slice(0, i).every(e => temNaEra(e.id));
+  };
+  nav.innerHTML = ERAS.map(e => {
+    const st = e.id === S.eraAtual ? "ativa" : (feito(e.id) ? "feito" : "futuro");
+    return `<span class="era-btn" data-estado="${st}">${e.curto}</span>`;
+  }).join("");
+  $("cDesc").textContent = S.feitos.size;
+  const idx = ERAS.findIndex(e => e.id === S.eraAtual) + 1;
+  $("cEra").textContent = `${idx}/7`;
+  $("marcosPlaca").innerHTML = MARCOS.map(id => {
+    const d = IT[id], feito = S.feitos.has(id);
+    return `<span class="mp" data-on="${feito ? 1 : 0}" title="${feito ? d.n : ""}"></span>`;
+  }).join("");
+  const nFeitos = MARCOS.filter(id => S.feitos.has(id)).length;
+  $("marcosPlaca").setAttribute("aria-label",
+    `${nFeitos} de ${MARCOS.length} marcos históricos descobertos`);
+  aplicarEra();
+}
+function temNaEra(id){ return [...S.feitos].some(f => IT[f] && IT[f].e === id); }
+function aplicarEra(){
+  const e = ERA[S.eraAtual];
+  document.documentElement.style.setProperty("--era", e.cor);
+  document.documentElement.style.setProperty("--era-texto", e.txt);
+  const marcos = [...S.feitos].filter(f => IT[f].star).pop();
+  if (marcos && IT[marcos].e !== S.eraAtual) S.eraAtual = IT[marcos].e;
+}
+
+/* ═══════════════ NOTA ═══════════════ */
+function renderNota(){
+  const partes = [];
+
+  partes.push(`<div class="titulo-bloco">TENTATIVA NA BANCADA</div>`);
+  if (S.tentativa.length){
+    partes.push(`<div class="tentativa">` + S.tentativa.map(t => {
+      const d = IT[t.id];
+      const cadeias = t.cadeia.length > 1 ? ` · ${t.cadeia.length} etapas` : "";
+      return `<div class="t-linha">
+        <span class="t-ponto">${d.g}</span>
+        <span class="t-nome">${d.n}<span class="b">${(d.ano || "CONSTRUÇÃO DIDÁTICA").toUpperCase()}${cadeias}</span></span>
+      </div>`;
+    }).join("") + `</div>`);
+  } else {
+    partes.push(`<p class="sem-nada">Arraste um componente até outro. Se a combinação fechar uma receita, os dois se fundem em um só. A gaveta no pé da bancada guarda o que você já descobriu — clique numa peça para trazer outra, ou arraste uma peça de volta para lá.</p>`);
+  }
+
+  if (S.registro){
+    const d = IT[S.registro];
+    partes.push(`<div class="registro">
+      <div class="titulo-bloco" style="margin-bottom:9px">REGISTRO${d.star ? " · MARCO" : ""}</div>
+      <div class="reg-nome">${d.n}</div>
+      <div class="reg-meta">${d.ano ? `${d.ano}<span>${d.autor || ""}</span>` : `<span>ANO E AUTOR NÃO SE APLICAM</span>`}</div>
+      ${d.txt ? `<p class="reg-texto">${d.txt}</p>` : ""}
+      <div class="marcas">
+        <span class="marca-p ${d.ano ? "on" : ""}"><i class="mk ${d.ano ? "mk-cheio" : "mk-vazio"}"></i>${d.ano ? "MARCO REAL" : "DEGRAU DIDÁTICO"}</span>
+        ${d.star ? `<span class="marca-p on"><i class="mk mk-central"></i>INVENÇÃO CENTRAL</span>` : ""}
+        <span class="marca-p on">${ERA[d.e].nome}</span>
+      </div>
+      ${filhosDe(S.registro) ? `<div class="reg-filho">Destrava: <b>${filhosDe(S.registro)}</b></div>` : ""}
+    </div>`);
+  }
+
+  // O OBJETIVO é a orientação de estreia: cede o lugar ao registro assim que
+  // existe uma descoberta para ler, e volta quando não há nenhuma.
+  if (!S.registro){
+    partes.push(`<div class="objetivo">
+      <div class="titulo-bloco">OBJETIVO</div>
+      <p class="obj-txt">Reconstruir a genealogia de <b>dez invenções centrais</b>, de 3500 a.C. a 2022, partindo de quatro materiais. Cada descoberta abre o registro do que foi inventado, quando e por quem.</p>
+    </div>`);
+  }
+
+  nota.innerHTML = partes.join("");
+  nota.querySelectorAll(".t-ponto svg,.reg-g svg").forEach(s => {
+    s.style.setProperty("--p1", "var(--tinta)");
+    s.style.setProperty("--p2", "#8d8478");
+  });
+}
+
+function filhosDe(id){
+  const nomes = RECEITAS.filter(r => r.seq.includes(id)).map(r => IT[r.out].n);
+  return [...new Set(nomes)].join(" · ");
+}
+
+/* ═══════════════ FITA ═══════════════ */
+function renderFita(){
+  const m = S.montagem;
+  const concluida = S.registro ? RECEITAS.find(x => x.out === S.registro) : null;
+  const r = m ? m.r : concluida;
+
+  if (r){
+    const feitos = m ? m.feitos : r.seq.length;
+    const completo = feitos >= r.seq.length;
+    const livre = r.seq.length === 2;
+    fitaNome.textContent = completo ? IT[r.out].n : "Montagem em andamento";
+    fitaMeta.textContent = completo
+      ? (livre
+        ? `RECEITA DE 2 PASSOS · COMPLETA · ORDEM LIVRE`
+        : `RECEITA DE ${r.seq.length} PASSOS · COMPLETA · A ORDEM IMPORTA`)
+      : `RECEITA DE ${r.seq.length} PASSOS · ${feitos} CONCLUÍDO${feitos === 1 ? "" : "S"}`;
+    fitaPassos.innerHTML = r.seq.map((id, i) => {
+      const cls = i < feitos ? "feito" : (i === feitos ? "atual" : "");
+      const seta = i < r.seq.length - 1
+        ? (livre ? `<span class="mais">+</span>` : `<span class="seta"></span>`) : "";
+      const ord = livre ? "" : `<span class="passo-ord">${String(i+1).padStart(2,"0")}</span>`;
+      return `<span class="passo ${cls}">${ord}<span class="passo-nome">${IT[id].n}</span></span>${seta}`;
+    }).join("") + (!completo
+      ? `${feitos < r.seq.length-1 ? `<span class="seta"></span>` : ""}<span class="aguardando">AGUARDANDO</span>` : "");
+  } else {
+    fitaNome.textContent = S.registro ? IT[S.registro].n : "Bancada sem receita ativa";
+    fitaMeta.textContent = "NENHUMA TENTATIVA REGISTRADA";
+    fitaPassos.innerHTML = `<span class="fita-nada">Arraste dois componentes um sobre o outro. Se a combinação fechar uma receita, a fita mostra os passos na ordem em que precisam ser montados.</span>`;
+  }
+}
+
+/* ═══════════════ REVELAÇÃO DE MARCO ═══════════════ */
+function revelar(id){
+  const d = IT[id];
+  const rev = $("revelacao");
+  // O aviso da bancada pode estar dizendo "falta X" no instante da descoberta.
+  clearTimeout(avisoT);
+  aviso.dataset.visivel = "0";
+  aviso.textContent = "";
+  falar(`Descoberta: ${d.n}. ${d.ano ? d.ano + ". " : ""}${d.autor || ""}`);
+  $("revNome").textContent = d.n;
+  $("revGrafico").innerHTML = d.g;
+  $("revGrafico").firstElementChild.style.setProperty("--p1", "var(--tinta)");
+  $("revGrafico").firstElementChild.style.setProperty("--p2", "#8d8478");
+  $("revMeta").innerHTML =
+    `<span class="rev-era"><span class="rev-idade">${ERA[d.e].nome}</span>${d.star ? `<span class="rev-central"><i class="mk mk-central"></i>INVENÇÃO CENTRAL</span>` : ""}</span>` +
+    `${d.ano}` +
+    (d.autor ? `<span class="rev-autor">${d.autor}</span>` : "");
+  $("revTexto").textContent = d.txt || "";
+  rev.dataset.visivel = "1";
+  $("revOk").focus();
+  setTimeout(() => {
+    S.eraAtual = d.e;
+    aplicarEra(); atualizarTrilho();
+  }, 60);
+}
+
+/* ═══════════════ CÓDIGO ═══════════════ */
+function abrirCodigo(foco){
+  const f = $("codigoFundo"), c = $("codigo");
+  f.dataset.aberto = "1";
+  c.setAttribute("aria-hidden", "false");
+  renderCodigo();
+  if (foco) $("btnFechar").focus();
+}
+function fecharCodigo(){
+  $("codigoFundo").dataset.aberto = "0";
+  $("codigo").setAttribute("aria-hidden", "true");
+  $("btnCodex").focus();
+}
+function renderCodigo(){
+  const corpo = $("codigoCorpo");
+  corpo.innerHTML = ERAS.map(e => {
+    const lista = Object.keys(IT).filter(id => IT[id].e === e.id);
+    const n = lista.filter(id => S.feitos.has(id)).length;
+    return `<section class="era-secao">
+      <div class="era-cab">
+        <span class="era-cor" style="background:${e.cor}"></span>
+        <span class="era-nome">${e.nome}</span>
+        <span class="era-q">${n}/${lista.length}</span>
+      </div>
+      ${lista.map(id => {
+        const d = IT[id], ok = S.feitos.has(id);
+        return `<div class="reg ${ok ? "" : "bloq"}">
+          <span class="reg-g">${d.g}</span>
+          <span class="reg-t">
+            <span class="reg-n">${ok ? d.n : "· · · · · · ·"}</span>
+            <span class="reg-d">${ok ? (d.ano || "CONSTRUÇÃO DIDÁTICA") : "NÃO DESCOBERTO"}</span>
+          </span>
+          ${d.star ? `<span class="reg-star"><i class="mk mk-central"></i><span class="sr">Invenção central</span></span>` : ""}
+        </div>`;
+      }).join("")}
+    </section>`;
+  }).join("");
+  corpo.querySelectorAll(".reg-g svg").forEach(s => {
+    s.style.setProperty("--p1", "var(--tinta)");
+    s.style.setProperty("--p2", "#8d8478");
+  });
+}
+
+/* ═══════════════ PERSISTÊNCIA ═══════════════ */
+function salvar(){
+  try {
+    localStorage.setItem(CHAVE, JSON.stringify({
+      feitos: [...S.feitos], era: S.eraAtual,
+      bancada: S.bancada.map(p => ({ id:p.id, cadeia:p.cadeia, x:p.x, y:p.y, m:p.montando }))
+    }));
+  } catch(e){}
+}
+function carregar(){
+  try {
+    const raw = localStorage.getItem(CHAVE) || localStorage.getItem(CHAVE_ANTIGA);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (!d.feitos || !d.feitos.length) return false;
+    S.feitos = new Set(d.feitos);
+    S.eraAtual = d.era || "terra";
+    S.bancada = d.bancada.map(b => ({ ...novaPeca(b.id, b.x, b.y, b.cadeia), montando:!!b.m }));
+    /* A bancada pode ter encolhido desde a última sessão — peça fora da
+       chapa é peça perdida, então tudo volta para dentro dos limites.  */
+    const W = bancada.clientWidth, H = alturaUtil();
+    S.bancada.forEach(p => {
+      p.x = Math.max(0, Math.min(W - 132, p.x));
+      p.y = Math.max(0, Math.min(H - alturaPeca(), p.y));
+    });
+    localStorage.removeItem(CHAVE_ANTIGA);
+    return true;
+  } catch(e){ return false; }
+}
+
+/* ═══════════════ INÍCIO ═══════════════ */
+function marcasTotais(){
+  document.getElementById("cTot").textContent = Object.keys(IT).length;
+}
+
+function iniciar(){
+  marcasTotais();
+  if (!carregar()) semear();
+  else aplicarEra();
+  desenhar();
+  atualizarTrilho();
+  renderNota();
+  renderFita();
+  renderCodigo();
+
+  document.addEventListener("keydown", ev => {
+    if (ev.key === "Escape"){
+      if ($("revelacao").dataset.visivel === "1"){ fecharRev(); }
+      else if ($("codigoFundo").dataset.aberto === "1") fecharCodigo();
+    }
+  });
+  $("gavLista").addEventListener("click", ev => {
+    const b = ev.target.closest(".gav-item");
+    if (b) puxarPeca(b.dataset.id);
+  });
+  $("btnCodex").addEventListener("click", () => abrirCodigo(true));
+  $("btnFechar").addEventListener("click", fecharCodigo);
+  $("codigoFundo").addEventListener("click", fecharCodigo);
+  $("revOk").addEventListener("click", fecharRev);
+  $("revCodex").addEventListener("click", () => { fecharRev(); abrirCodigo(false); });
+
+  let rt;
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => {
+      S.bancada.forEach(repositionar);
+      desenhar();
+    }, 160);
+  });
+  setInterval(salvar, 4000);
+  window.addEventListener("beforeunload", salvar);
+}
+
+function fecharRev(){
+  $("revelacao").dataset.visivel = "0";
+  aplicarEra(); atualizarTrilho();
+  salvar();
+}
+
+iniciar();
+</script>
+</body>
+</html>

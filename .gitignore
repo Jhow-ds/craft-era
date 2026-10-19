@@ -1,0 +1,11 @@
+# Painel de obra em Python — projeto separado, fica fora do repositório
+progresso/
+
+# Ferramentas locais do agente: skill de terceiros e estado de processo
+.opencode/
+.impeccable/
+
+# Sistema operacional
+Thumbs.db
+desktop.ini
+.DS_Store
