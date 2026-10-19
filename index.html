@@ -534,9 +534,46 @@ const ERA = Object.fromEntries(ERAS.map(e => [e.id, e]));
    pontas arredondados, viewBox 72×72.                              */
 const traco = (corpo) =>
   `<svg viewBox="0 0 72 72" fill="none" stroke-linecap="round" stroke-linejoin="round">
+     <g fill="var(--p3, transparent)" stroke="none">${corpo[0]}</g>
      <g stroke="var(--p1)" stroke-width="3.4">${corpo[0]}</g>
      <g stroke="var(--p2)" stroke-width="2.3">${corpo[1]}</g>
    </svg>`;
+
+/* ── PÁTINA ────────────────────────────────────────────────
+   Cor de matéria, não de objeto. O que se pode segurar ganha
+   um banho dessaturado; abstração (internet, código, rede
+   neural) e mecanismo fino continuam linha pura — a pátina
+   não sobrevive a 6 px de traço. A cor da era continua sendo
+   a única cor saturada da tela.                              */
+const MAT = {
+  madeira:"#6f4a2e", fibra:"#7a6f58", pedra:"#5f5c55", agua:"#3f5e6a",
+  vidro:"#5c767c", metal:"#59616a", fogo:"#843f23", oleo:"#6a5426",
+  tinta:"#3f4f6a", digital:"#4a5a66"
+};
+const PATINA = {
+  madeira:"madeira", pedra:"pedra", fibra:"fibra", agua:"agua", fogo:"fogo", areia:"pedra",
+  carvao:"pedra", cal:"pedra", forno:"fogo", barra:"metal", corda:"fibra", machado:"metal",
+  tabua:"madeira", vidro:"vidro",
+  mineral:"pedra", cobre:"metal", estanho:"metal", bronze:"metal", oleo:"oleo", tinta:"tinta",
+  papel:"fibra", tecido:"fibra", cartao:"fibra", "cartao-perfurado":"fibra", tipo:"metal",
+  ferro:"metal", cristal:"vidro", lente:"vidro", livro:"fibra", alfabeto:"metal", codice:"fibra",
+  pilha:"oleo", valvula:"vidro", caldeira:"metal", pistao:"metal",
+  lampada:"vidro", radio:"metal", bateria:"oleo", contador:"digital", silicio:"digital",
+  germanio:"digital", transistor:"digital", circuito:"digital", "circuito-integrado":"digital",
+  tv:"digital", laser:"metal", memoria:"digital",
+  microprocessador:"digital", teclado:"digital", monitor:"digital", computador:"digital",
+  "computador-pessoal":"digital", roteador:"digital", navegador:"digital", cilindro:"digital",
+  impressora:"digital", "impressora-3d":"digital", tela:"vidro", condutor:"metal",
+  "tela-sensivel":"vidro", celular:"digital", smartphone:"digital",
+  corpus:"digital", modelo:"digital"
+};
+
+/* Onde o SVG entra sem passar por criarEl — códice e revelação — a pátina
+   vai embutida no próprio desenho. */
+function arte(id){
+  const fam = PATINA[id];
+  return fam ? IT[id].g.replace("<svg ", `<svg style="--p3:${MAT[fam]}" `) : IT[id].g;
+}
 
 /* ═══════════════ ITENS ═══════════════
    ano/autor presentes  → marco real (fato datado)
@@ -545,8 +582,8 @@ const IT = {
 
 /* ── Terra ────────────────────────────────────────────── */
 madeira:{e:"terra",n:"Madeira",g:traco([
-  `<path d="M20 24h24a12 12 0 0 1 0 24H20Z"/><ellipse cx="20" cy="36" rx="7" ry="12"/>`,
-  `<ellipse cx="20" cy="36" rx="3.4" ry="6"/><path d="M31 24.5v23M44 26v20"/>`
+  `<g transform="rotate(-24 36 36)"><path d="M18 26h28a10 10 0 0 1 0 20H18Z"/><ellipse cx="18" cy="36" rx="6.5" ry="10"/></g>`,
+  `<g transform="rotate(-24 36 36)"><ellipse cx="18" cy="36" rx="2.8" ry="5"/><path d="M32 27l3 4M44 28l3 4"/></g>`
 ])},
 pedra:{e:"terra",n:"Pedra",g:traco([
   `<path d="M14 46 22 22l16-6 16 10 4 20-16 10-16-4Z"/>`,
@@ -563,7 +600,20 @@ agua:{e:"terra",n:"Água",g:traco([
 fogo:{e:"terra",n:"Fogo",g:traco([
   `<path d="M36 10c3 10-4 13-4 20a6 6 0 0 0 12 0c0-5-4-8-3-13 6 5 11 12 11 20a16 16 0 0 1-32 0c0-11 8-18 16-27Z"/>`,
   `<path d="M36 40a6 6 0 0 0 4-7"/><path d="M20 60h32"/>`
-])},
+]),
+/* O fogo é o único item cuja identidade é processo, não artefato —
+   por isso, e só por isso, ele tem quadros. Tocam uma vez, quando a
+   peça nasce; na bancada, na gaveta, no códice e no PDF vale o quadro 1. */
+q:[
+  traco([
+  `<path d="M34 8c4 10-5 13-5 21a6 6 0 0 0 12 0c0-5-4-8-3-13 6 5 11 12 11 20a16 16 0 0 1-32 0c0-11 9-18 17-28Z"/>`,
+  `<path d="M36 41a6 6 0 0 0 4-7"/><path d="M20 60h32"/>`
+  ]),
+  traco([
+  `<path d="M38 12c2 9-4 12-4 19a6 6 0 0 0 12 0c0-5-4-8-3-13 6 5 11 13 11 21a16 16 0 0 1-32 0c0-11 8-18 16-27Z"/>`,
+  `<path d="M35 39a6 6 0 0 0 5-7"/><path d="M20 60h32"/>`
+  ])
+]},
 vapor:{e:"terra",n:"Vapor",g:traco([
   `<path d="M20 50c-7-7 7-9 0-17M36 50c-7-9 7-12 0-22M52 50c-7-7 7-9 0-17"/>`,
   `<path d="M12 58h48"/>`
@@ -589,8 +639,8 @@ barra:{e:"terra",n:"Barra",g:traco([
   `<path d="M56 25v11M20 33l-2 11"/>`
 ])},
 corda:{e:"terra",n:"Corda",g:traco([
-  `<path d="M16 12c6 8 6 12 0 20s-6 12 0 20M36 12c6 8 6 12 0 20s-6 12 0 20M56 12c6 8 6 12 0 20s-6 12 0 20"/>`,
-  `<path d="M16 22 36 32l20-10M16 42l20 10 20-10"/>`
+  `<path d="M30 8c14 8-14 16 0 24s-14 16 0 24"/><path d="M42 8c-14 8 14 16 0 24s14 16 0 24"/>`,
+  `<path d="M31 20h10M31 44h10"/>`
 ])},
 machado:{e:"terra",n:"Machado",g:traco([
   `<path d="M40 14c10 0 17 6 19 14-5 4-11 6-17 6-4 0-8-1-11-4 1-9 4-14 9-16Z"/><path d="M18 22 30 58"/>`,
@@ -1208,7 +1258,29 @@ function criarEl(p){
 
   el.style.setProperty("--p1", "var(--tinta)");
   el.style.setProperty("--p2", "#8d8478");
+  const pat = PATINA[p.id];
+  if (pat) el.style.setProperty("--p3", MAT[pat]);
   return el;
+}
+
+/* ── DESCOBERTA ────────────────────────────────────────────
+   Só quem tem quadros acende, e só no instante em que nasce.
+   Na bancada, movimento é evento — não decoração.             */
+function acender(el, d){
+  if (!d.q || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const g = el.querySelector(".grafico");
+  if (!g) return;
+  const quadros = [d.g, ...d.q];
+  let i = 0;
+  const t = setInterval(() => {
+    if (!el.isConnected) { clearInterval(t); return; }
+    i = (i + 1) % quadros.length;
+    g.innerHTML = quadros[i];
+  }, 160);
+  setTimeout(() => {
+    clearInterval(t);
+    if (el.isConnected) g.innerHTML = d.g;
+  }, 980);
 }
 
 function desenhar(){
@@ -1217,6 +1289,7 @@ function desenhar(){
     const el = criarEl(p);
     if (p.montando) el.classList.add("montando");
     if (p.novo) { el.classList.add("novidade"); p.novo = false; }
+    if (p.viva) { p.viva = false; acender(el, IT[p.id]); }
     p.el = el;
     bancada.appendChild(el);
   }
@@ -1505,6 +1578,7 @@ function engatar(base, entrada){
 
 function fundir(r, seq, base, entrada){
   const item = IT[r.out];
+  const inedito = !S.feitos.has(r.out);
   S.feitos.add(r.out);
   S.montagem = { r, feitos: r.seq.length };
 
@@ -1516,6 +1590,7 @@ function fundir(r, seq, base, entrada){
   S.bancada = S.bancada.filter(p => p !== base && p !== entrada);
   const nova = novaPeca(r.out, x, y);
   nova.novo = true;
+  nova.viva = inedito;
   S.bancada.push(nova);
 
   S.registro = r.out;
@@ -1711,6 +1786,7 @@ function revelar(id){
   $("revGrafico").innerHTML = d.g;
   $("revGrafico").firstElementChild.style.setProperty("--p1", "var(--tinta)");
   $("revGrafico").firstElementChild.style.setProperty("--p2", "#8d8478");
+  if (PATINA[id]) $("revGrafico").firstElementChild.style.setProperty("--p3", MAT[PATINA[id]]);
   $("revMeta").innerHTML =
     `<span class="rev-era"><span class="rev-idade">${ERA[d.e].nome}</span>${d.star ? `<span class="rev-central"><i class="mk mk-central"></i>INVENÇÃO CENTRAL</span>` : ""}</span>` +
     `${d.ano}` +
@@ -1751,7 +1827,7 @@ function renderCodigo(){
       ${lista.map(id => {
         const d = IT[id], ok = S.feitos.has(id);
         return `<div class="reg ${ok ? "" : "bloq"}">
-          <span class="reg-g">${d.g}</span>
+          <span class="reg-g">${arte(id)}</span>
           <span class="reg-t">
             <span class="reg-n">${ok ? d.n : "· · · · · · ·"}</span>
             <span class="reg-d">${ok ? (d.ano || "CONSTRUÇÃO DIDÁTICA") : "NÃO DESCOBERTO"}</span>

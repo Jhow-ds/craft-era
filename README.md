@@ -65,6 +65,13 @@ dentro do próprio arquivo, todos na mesma linguagem de traço — contorno de d
 arredondadas, `viewBox` 72×72. Nada de imagem externa, nada de emoji, nada de dependência de
 assets. Cada invenção é desenhada como o artefato material que ela é.
 
+Desses 104, **64 recebem pátina de material** — madeira, pedra, vidro, metal, água, fogo —, um
+banho de cor dessaturado que sai da própria silhueta do desenho. Mecanismo fino (prensa, tear),
+diagrama (fluxograma) e abstração (internet, código, rede neural) continuam em linha pura,
+porque a pátina não sobrevive a 6 px de traço. A cor da era segue sendo a única cor saturada
+da tela. O fogo tem três quadros: eles tocam uma vez, no instante em que a peça é descoberta,
+e param no primeiro.
+
 ## Caderno de receitas (PDF)
 
 **[`Craft-Era-receitas.pdf`](Craft-Era-receitas.pdf)** — as 100 receitas, era por era, com a

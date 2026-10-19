@@ -59,7 +59,7 @@ O que **não** existe e não deve ser fabricado: depoimentos, estatísticas de u
 1. **Acumulação, não gênio.** Toda invenção tem predecessores nomeados. A árvore é o argumento.
 2. **O marco é real; o degrau é didático.** Cada item do jogo declara se é fato histórico ou construção didática, sem exceção e sem ambiguidade.
 3. **O gesto ensina.** A combinação errada é tão parte da aprendizagem quanto a combinação certa.
-4. **A era é a cor.** A identidade cromática carrega informação, não ornamento.
+4. **A era é a cor.** A identidade cromática carrega informação, não ornamento — por isso a única cor saturada da tela é a da era: a pátina de material é dessaturada por construção.
 5. **Ensinar primeiro, estética segundo.** Se a aula exigir precisão histórica, ela vence a estética.
 
 ## Accessibility & Inclusion

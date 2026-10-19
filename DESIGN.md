@@ -24,6 +24,12 @@ não há ícones genéricos de biblioteca: todo desenho de item é SVG autoral.
 - **Um artefato por invenção.** Roda é um aro com raios, não um ícone de
   engrenagem. Prensa é uma estrutura com fuso. O desenho precisa ser
   reconhecível como o objeto físico.
+- **Matéria tem cor; abstração tem linha.** Sólidos de corpo único (madeira,
+  pedra, vidro, metal, água, fogo) recebem uma pátina de material;
+  mecanismo fino (prensa, tear), diagrama (fluxograma) e abstração (internet,
+  código, rede neural) continuam em linha pura — a pátina não sobrevive a
+  6 px de traço. São 64 dos 104 itens. A pátina é dessaturada por construção:
+  a era segue sendo a única cor viva da tela.
 
 ## 2. Cores
 
@@ -51,6 +57,25 @@ Paleta de eras (`cor` = traço/gráfico, `txt` = texto e fundo de chip):
 | V · Elétrica | `#c9a227` | `#e6c55c` |
 | VI · Digital | `#3fa9c4` | `#6fcbe0` |
 | VII · Espectro | `#d94f8c` | `#f07bb0` |
+
+Pátina de material (`--p3`, só em sólidos de corpo único):
+
+| Família | hex | itens |
+|---|---|---|
+| madeira | `#6f4a2e` | madeira, tábua |
+| fibra | `#7a6f58` | fibra, corda, papel, tecido, cartão, livro, códice |
+| pedra | `#5f5c55` | pedra, areia, cal, carvão, mineral |
+| água | `#3f5e6a` | água |
+| vidro | `#5c767c` | vidro, cristal, lente, lâmpada, válvula, tela |
+| metal | `#59616a` | barra, cobre, estanho, bronze, ferro, tipo, caldeira, pistão, condutor |
+| fogo | `#843f23` | fogo, forno |
+| óleo | `#6a5426` | óleo, pilha, bateria |
+| tinta | `#3f4f6a` | tinta |
+| digital | `#4a5a66` | silício, germânio, transistor, circuito, memória, microprocessador, monitores, celular, navegador, corpus, modelo |
+
+A pátina entra como terceiro slot do `traco()` e sai da mesma silhueta que
+o traço primário. No PDF ela vira tint sobre papel — `mistura(cor, branco,
+.82)` —, nunca bloco escuro.
 
 **Regra:** texto sobre cor de era usa sempre o tom `txt` como fundo com texto
 `#17130f`. O tom escuro não serve de fundo para texto (terra cai a 3,4:1). O
@@ -121,6 +146,10 @@ rótulo decorativo não interativo.
 - Chegada de peça: `chegar` 500 ms, escala .82 → 1.
 - Recusa: `negar` 340 ms, deslocamento de ±7 px.
 - Faísca de fusão: 620 ms, escala 1 → 9, opacidade 1 → 0.
+- Descoberta: o fogo tem três quadros (160 ms cada, 980 ms no total). A peça
+  acende no instante em que nasce e assenta no quadro 1 — só na primeira vez
+  que aquele item é descoberto. Na bancada, na gaveta, no códice e no PDF o
+  desenho é estático.
 - Tudo acima é desligado por `prefers-reduced-motion`.
 
 ## 7. Acessibilidade
@@ -139,6 +168,8 @@ rótulo decorativo não interativo.
 - Grade de cartões alinhados como layout principal.
 - Vidro fosco, brilho, gradiente decorativo, borda arco-íris.
 - Emoji como arte de item.
+- Pátina em abstração (internet, código, rede neural) ou em mecanismo fino:
+  a cor é matéria, não paleta.
 - Ordem de receita dependente de qual peça foi arrastada sobre qual.
 - Cor de era usada como fundo de texto sem checar contraste.
 - Glifo de fonte no papel de ícone: marcas são desenhadas em CSS (círculo,
