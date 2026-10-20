@@ -37,7 +37,7 @@ não há ícones genéricos de biblioteca: todo desenho de item é SVG autoral.
 --fundo       #14120f   plano da página
 --chapa       #1a1714   superfície da bancada
 --chapa-alta  #211d19   peça, linha de tentativa
---chapa-fundo #151210   coluna de registro
+--chapa-fundo #151210   rodapé de registro
 --trilho      #322c26   divisórias de 1 px
 --trilho-2    #3d362e   bordas de controle
 --tinta       #ece6da   texto principal  (14,4:1 sobre a chapa)
@@ -105,9 +105,10 @@ rótulo decorativo não interativo.
 
 ## 4. Espaço e forma
 
-- Grade da página: `76px / 1fr / 164px` no desktop, com a bancada à esquerda e
-  duas colunas de 300 px (gaveta) e 336 px (nota) à direita. Abaixo de 1180 px
-  a bancada ocupa a largura toda e gaveta e nota se deitam lado a lado.
+- Grade da página: `76px / 1fr / 196px` no desktop, com a bancada à esquerda,
+  a gaveta de 320 px à direita e o rodapé dividido entre fita e nota. Abaixo de
+  980 px a bancada ocupa a largura toda, a gaveta vira faixa sob ela e fita e
+  nota continuam lado a lado no rodapé; abaixo de 720 px tudo empilha.
 - Peça: 132 × ~169 px no total — rótulo acima, assento de 132 × 132 px (raio
   9 px, borda 1 px `--trilho`, faixa de 4 px na aresta de cima), medida abaixo.
 - Raio de painel: 14 px.
@@ -122,7 +123,7 @@ rótulo decorativo não interativo.
   ABAIXO (ano real em caixa alta ou `CONSTRUÇÃO DIDÁTICA`). O ponto cinza no
   canto superior direito marca degrau didático; a corrente de nós no canto
   esquerdo conta as etapas da montagem (elos de 1 px ligando os nós).
-  Arrastável; hover acende a borda do assento e abre a ficha da peça; alvo
+  Arrastável; hover acende a borda do assento (a ficha é só da gaveta); alvo
   recebe contorno tracejado da cor da era; falha sacode (`nega`). Clique com o
   botão direito (ou `Delete`) remove a peça da bancada sem perdê-la na gaveta.
 - **Gaveta** — coluna à direita da bancada, com rolagem vertical e uma seção
@@ -130,18 +131,18 @@ rótulo decorativo não interativo.
   já foi descoberto como linha de ícone, nome e ano. Clique traz uma cópia;
   arrastar uma peça até aqui a devolve. É o que impede a partida de travar por
   falta de material e o que evita a tira horizontal de 104 peças.
-- **Dica** — ficha de 312 px que abre no hover ou no foco de uma peça, da
-  gaveta ou da bancada. Traz era e selo de marco, nome, data e autor, `COMO FOI
-  CRIADO` (a receita que a produz), `O QUE É` (primeira frase do registro ou a
-  marca de degrau didático) e `DESBLOQUEIA` (tudo que a peça destrava). Fica no
-  lado com mais espaço e desaparece no arraste e na rolagem.
-- **Fita** — rodapé de 164 px com a receita ativa. Duas etapas mostram `+`
-  e a legenda `ORDEM LIVRE`; três ou quatro mostram `01 → 02 → …` e
-  `A ORDEM IMPORTA`. A ordem exibida é a histórica, não a do gesto.
-- **Nota** — coluna da direita: tentativa atual e registro da última descoberta
-  (nome, ano, autor, texto, selos, o que destrava). O bloco `OBJETIVO` só
-  aparece enquanto não há registro: é orientação de estreia e cede lugar à
-  leitura histórica, para que o texto mais longo caiba na coluna sem corte.
+- **Dica** — ficha de 312 px que abre no hover ou no foco de uma peça da
+  gaveta; a bancada não abre ficha. Traz era e selo de marco, nome, data e
+  autor, `COMO FOI CRIADO` (a receita que a produz), `O QUE É` (primeira frase
+  do registro ou a marca de degrau didático) e `DESBLOQUEIA` (tudo que a peça
+  destrava). Fica no lado com mais espaço e desaparece no arraste e na rolagem.
+- **Fita** — metade esquerda do rodapé, com a receita ativa. Duas etapas
+  mostram `+` e a legenda `ORDEM LIVRE`; três ou quatro mostram `01 → 02 → …`
+  e `A ORDEM IMPORTA`. A ordem exibida é a histórica, não a do gesto.
+- **Nota** — metade direita do rodapé, ao lado da fita: tentativa atual e
+  registro da última descoberta (nome, ano, autor, texto, selos, o que
+  destrava). Sem tentativa e sem registro, o painel mostra a instrução de
+  estreia; com registro, a leitura histórica ocupa o espaço sozinha.
 - **Código** — painel de 460 px com todas as eras; item não descoberto aparece
   em silhueta, com nome mascarado. É referência, não receituário.
 - **Revelação** — caixa de 560 px, faixa da cor da era no topo, título grande,

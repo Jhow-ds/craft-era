@@ -1,6 +1,6 @@
 # Craft Era
 
-![Craft Era funcionando: quatro peças na bancada, o registro de uma invenção aberto à direita e a corrente de receitas na fita inferior.](docs/craft-era.png)
+![Craft Era funcionando: quatro peças na bancada, a gaveta de peças à direita e, no rodapé, o registro da invenção ao lado da corrente de receitas.](docs/craft-era.png)
 
 Um jogo de combinação no formato *Infinite Craft* em que a árvore de receitas é a **genealogia
 das invenções**: você arrasta componentes sobre a bancada e remonta, na ordem em que

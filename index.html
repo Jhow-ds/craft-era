@@ -45,7 +45,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 /* ─────────── TRILHO ─────────── */
 .trilho{
-  grid-area:trilho;display:flex;align-items:center;gap:20px;
+  display:flex;align-items:center;gap:20px;
   padding:0 30px;background:var(--chapa);border-bottom:1px solid var(--trilho);height:76px;
 }
 .marca{font-family:var(--display);font-weight:800;font-size:33px;letter-spacing:.005em;line-height:1;white-space:nowrap}
@@ -72,7 +72,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 /* ─────────── BANCADA ─────────── */
 .bancada{
-  grid-area:bancada;position:relative;overflow:hidden;background:var(--chapa);
+  position:relative;overflow:hidden;background:var(--chapa);
   /* Graduação da chapa: 40 × 40, desenhada como trama de 1px, não como
      listras decorativas.                                                */
   background-image:
@@ -120,7 +120,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
    rola na vertical e se divide por era: uma bandeja horizontal com 104
    peças virou uma tira longa demais para percorrer.                        */
 .gaveta{
-  grid-area:gaveta;position:relative;display:flex;flex-direction:column;
+  position:relative;display:flex;flex-direction:column;
   min-height:0;min-width:0;overflow:hidden;
   background:var(--chapa-fundo);border-left:1px solid var(--trilho);
 }
@@ -314,8 +314,9 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 /* ─────────── NOTA ─────────── */
 .nota{
-  grid-area:nota;background:var(--chapa-fundo);border-left:1px solid var(--trilho);
-  padding:20px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;
+  background:var(--chapa-fundo);border-left:1px solid var(--trilho);
+  padding:18px 22px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;
+  min-height:0;min-width:0;
 }
 .titulo-bloco{font-family:var(--medida);font-size:10px;letter-spacing:.15em;color:var(--tinta-3)}
 .tentativa{display:flex;flex-direction:column;gap:7px}
@@ -326,9 +327,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .t-nome .b{display:block;font-family:var(--medida);font-size:9px;color:var(--tinta-3);margin-top:2px;letter-spacing:.06em}
 .sem-nada{font-size:12.5px;color:var(--tinta-3);line-height:1.6;padding:10px 0}
 .registro{border-top:1px solid var(--trilho);padding-top:16px}
-.objetivo{border-top:1px solid var(--trilho);padding-top:16px;margin-top:auto}
-.obj-txt{font-size:12.5px;line-height:1.62;color:var(--tinta-3);margin-top:9px}
-.obj-txt b{color:var(--tinta-2);font-weight:500}
+.registro:first-child{border-top:0;padding-top:0}
 .reg-nome{font-family:var(--display);font-weight:600;font-size:25px;line-height:1.06;margin-bottom:8px}
 .reg-meta{font-family:var(--medida);font-size:11px;color:var(--era-texto);letter-spacing:.05em;line-height:1.7}
 .reg-meta span{display:block;color:var(--tinta-3)}
@@ -355,8 +354,8 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 /* ─────────── FITA DE RECEITA ─────────── */
 .fita{
-  grid-area:fita;background:var(--chapa-fundo);border-top:1px solid var(--trilho);
-  padding:19px 30px;display:flex;flex-direction:column;gap:13px;min-height:0;
+  background:var(--chapa-fundo);
+  padding:19px 30px;display:flex;flex-direction:column;gap:13px;min-height:0;min-width:0;
 }
 .fita-cab{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 .fita-nome{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:.01em;line-height:1.1}
@@ -487,37 +486,41 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .rev-btn:hover{border-color:var(--era);color:var(--tinta)}
 .rev-btn.p:hover{color:#17130f;filter:brightness(1.08)}
 
-/* ─────────── GRADE ─────────── */
-.app{
-  display:grid;height:100vh;
-  grid-template-columns:minmax(0,1fr) 300px 336px;
-  grid-template-rows:76px minmax(0,1fr) 164px;
-  grid-template-areas:"trilho trilho trilho" "bancada gaveta nota" "fita fita fita";
+/* ─────────── GRADE ───────────
+   Duas faixas empilhadas: a de cima tem bancada + gaveta, a de baixo divide
+   o rodapé entre fita de receita e nota. Cada faixa tem sua própria medida
+   de coluna, então a nota pode ser mais larga que a gaveta.              */
+.app{display:grid;grid-template-rows:76px minmax(0,1fr) 196px;height:100vh}
+.meio{display:grid;grid-template-columns:minmax(0,1fr) 320px;min-height:0;min-width:0}
+.rodape{
+  display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);
+  min-height:0;min-width:0;border-top:1px solid var(--trilho);
 }
 .trilho,.bancada,.gaveta,.nota,.fita{min-width:0}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
-/* No empilhado a gaveta deixa a coluna e se deita ao lado do registro:
-   a lista continua vertical, só muda de dono da faixa.                    */
 @media (max-width:1180px){
-  .app{grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-       grid-template-rows:76px minmax(0,1fr) 196px 164px;
-       grid-template-areas:"trilho trilho" "bancada bancada" "gaveta nota" "fita fita"}
-  .gaveta{border-left:none;border-top:1px solid var(--trilho)}
-  .nota{border-left:1px solid var(--trilho);border-top:1px solid var(--trilho);
-        height:auto;padding:15px 18px;gap:13px}
-  .objetivo{display:none}
+  .meio{grid-template-columns:minmax(0,1fr) 300px}
   .talho{display:none}
   .era-btn{padding:5px 7px;font-size:9px;letter-spacing:.06em}
   .trilho{padding:0 20px;gap:16px}
+}
+/* Sem largura para a coluna, a gaveta vira faixa sob a bancada e o registro
+   continua ao lado das receitas, no rodapé.                              */
+@media (max-width:980px){
+  .app{grid-template-rows:76px minmax(0,1fr) 200px}
+  .meio{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 168px}
+  .gaveta{border-left:none;border-top:1px solid var(--trilho)}
+  .rodape{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 }
 @media (max-width:880px){
   .eras{display:none}
 }
 @media (max-width:720px){
-  .app{grid-template-columns:minmax(0,1fr);
-       grid-template-rows:64px minmax(0,1fr) 120px 118px 140px;
-       grid-template-areas:"trilho" "bancada" "gaveta" "nota" "fita"}
+  .app{grid-template-rows:64px minmax(0,1fr) 264px}
+  .meio{grid-template-rows:minmax(0,1fr) 120px}
+  .rodape{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 124px}
+  .nota{border-left:none;border-top:1px solid var(--trilho);padding:14px 16px;gap:11px}
   .trilho{height:64px;padding:0 16px;gap:14px}
   .marca{font-size:26px}
   .contador{display:none}
@@ -565,37 +568,45 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     </div>
   </header>
 
-  <main class="bancada" id="bancada">
-    <div class="placa" aria-hidden="true">
-      <span class="pcr"></span><span class="pcr"></span><span class="pcr"></span><span class="pcr"></span>
-      <span class="datum"></span>
-    </div>
-    <div class="selo" id="selo">BANCADA · ARRASTE UM COMPONENTE SOBRE O OUTRO</div>
-    <div class="marcos-placa">
-      <span class="mp-rot">MARCOS</span>
-      <span class="mp-lista" id="marcosPlaca" role="img" aria-label="Marcos históricos descobertos"></span>
-    </div>
-  </main>
+  <div class="meio">
 
-  <section class="gaveta" id="gaveta" aria-label="Peças já descobertas">
-    <div class="gav-cab">
-      <span class="gav-rot">PEÇAS</span>
-      <span class="gav-conta" id="gavConta">0 DESCOBERTAS</span>
-    </div>
-    <div class="gav-ajuda">CLIQUE TRAZ · DIR. NA BANCADA REMOVE</div>
-    <div class="gav-lista" id="gavLista"
-         aria-label="Peças já descobertas, separadas por era. Clique para trazer uma cópia à bancada; arraste uma peça até aqui para devolvê-la."></div>
-  </section>
+    <main class="bancada" id="bancada">
+      <div class="placa" aria-hidden="true">
+        <span class="pcr"></span><span class="pcr"></span><span class="pcr"></span><span class="pcr"></span>
+        <span class="datum"></span>
+      </div>
+      <div class="selo" id="selo">BANCADA · ARRASTE UM COMPONENTE SOBRE O OUTRO</div>
+      <div class="marcos-placa">
+        <span class="mp-rot">MARCOS</span>
+        <span class="mp-lista" id="marcosPlaca" role="img" aria-label="Marcos históricos descobertos"></span>
+      </div>
+    </main>
 
-  <aside class="nota" id="nota" aria-label="Registro da tentativa"></aside>
+    <section class="gaveta" id="gaveta" aria-label="Peças já descobertas">
+      <div class="gav-cab">
+        <span class="gav-rot">PEÇAS</span>
+        <span class="gav-conta" id="gavConta">0 DESCOBERTAS</span>
+      </div>
+      <div class="gav-ajuda">CLIQUE TRAZ · DIR. NA BANCADA REMOVE</div>
+      <div class="gav-lista" id="gavLista"
+           aria-label="Peças já descobertas, separadas por era. Clique para trazer uma cópia à bancada; arraste uma peça até aqui para devolvê-la."></div>
+    </section>
 
-  <footer class="fita">
-    <div class="fita-cab">
-      <div class="fita-nome" id="fitaNome">Bancada vazia</div>
-      <div class="fita-meta" id="fitaMeta">NENHUMA TENTATIVA REGISTRADA</div>
-    </div>
-    <div id="fitaPassos" class="passos"></div>
-  </footer>
+  </div>
+
+  <div class="rodape">
+
+    <footer class="fita">
+      <div class="fita-cab">
+        <div class="fita-nome" id="fitaNome">Bancada vazia</div>
+        <div class="fita-meta" id="fitaMeta">NENHUMA TENTATIVA REGISTRADA</div>
+      </div>
+      <div id="fitaPassos" class="passos"></div>
+    </footer>
+
+    <aside class="nota" id="nota" aria-label="Registro da tentativa"></aside>
+
+  </div>
 
 </div>
 
@@ -1369,7 +1380,7 @@ function criarEl(p){
       `<div class="faixa" style="background:${ERA[d.e].cor}"></div>` +
       (p.cadeia.length > 1 ? `<div class="cadeia">${p.cadeia.map(() => "<i></i>").join("")}</div>` : "") +
       `<div class="grafico">${d.g}</div>` +
-      (d.ano ? "" : `<div class="didatico" title="Construção didática do jogo, não um marco histórico"></div>`) +
+      (d.ano ? "" : `<div class="didatico"></div>`) +
     `</div>` +
     `<div class="medida">${d.ano ? d.ano.toUpperCase() : "CONSTRUÇÃO DIDÁTICA"}</div>`;
 
@@ -1643,10 +1654,8 @@ function ligarPecas(){
     p.el.addEventListener("pointerdown", pegarPeca);
     p.el.addEventListener("keydown", tecladoPeca);
     p.el.addEventListener("contextmenu", menuPeca);
-    p.el.addEventListener("pointerenter", () => { if (!arraste) agendarDica(p.id, p.el, p); });
-    p.el.addEventListener("pointerleave", () => { if (!arraste) fecharDica(); });
-    p.el.addEventListener("focus", () => { if (!arraste) agendarDica(p.id, p.el, p); });
-    p.el.addEventListener("blur", fecharDica);
+    /* A ficha é da gaveta: na bancada a peça já está em uso e o hover não
+       abre nada. Só o gesto de arrastar interessa aqui.                   */
   });
 }
 
@@ -1948,8 +1957,11 @@ function aplicarEra(){
 function renderNota(){
   const partes = [];
 
-  partes.push(`<div class="titulo-bloco">TENTATIVA NA BANCADA</div>`);
+  /* Com registro aberto e nenhuma tentativa em curso, o registro ocupa a
+     nota inteira. Antes, a instrução de estreia empurrava a descoberta para
+     fora do painel baixo.                                                */
   if (S.tentativa.length){
+    partes.push(`<div class="titulo-bloco">TENTATIVA NA BANCADA</div>`);
     partes.push(`<div class="tentativa">` + S.tentativa.map(t => {
       const d = IT[t.id];
       const cadeias = t.cadeia.length > 1 ? ` · ${t.cadeia.length} etapas` : "";
@@ -1958,8 +1970,9 @@ function renderNota(){
         <span class="t-nome">${d.n}<span class="b">${(d.ano || "CONSTRUÇÃO DIDÁTICA").toUpperCase()}${cadeias}</span></span>
       </div>`;
     }).join("") + `</div>`);
-  } else {
-    partes.push(`<p class="sem-nada">Arraste um componente até outro. Se a combinação fechar uma receita, os dois se fundem em um só. A gaveta à direita guarda o que você já descobriu — clique numa peça para trazer outra, arraste uma peça até ela para devolver, ou clique com o botão direito sobre uma peça da bancada para removê-la.</p>`);
+  } else if (!S.registro){
+    partes.push(`<div class="titulo-bloco">TENTATIVA NA BANCADA</div>`);
+    partes.push(`<p class="sem-nada">O objetivo é reconstruir a genealogia de dez invenções centrais, de 3500 a.C. a 2022. A gaveta à direita guarda o que você já descobriu — clique numa peça para trazer outra, arraste uma peça até ela para devolver, ou use o botão direito sobre uma peça da bancada para removê-la.</p>`);
   }
 
   if (S.registro){
@@ -1975,15 +1988,6 @@ function renderNota(){
         <span class="marca-p on">${ERA[d.e].nome}</span>
       </div>
       ${filhosDe(S.registro) ? `<div class="reg-filho">Destrava: <b>${filhosDe(S.registro)}</b></div>` : ""}
-    </div>`);
-  }
-
-  // O OBJETIVO é a orientação de estreia: cede o lugar ao registro assim que
-  // existe uma descoberta para ler, e volta quando não há nenhuma.
-  if (!S.registro){
-    partes.push(`<div class="objetivo">
-      <div class="titulo-bloco">OBJETIVO</div>
-      <p class="obj-txt">Reconstruir a genealogia de <b>dez invenções centrais</b>, de 3500 a.C. a 2022, partindo de quatro materiais. Cada descoberta abre o registro do que foi inventado, quando e por quem.</p>
     </div>`);
   }
 
