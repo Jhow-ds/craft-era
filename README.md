@@ -29,8 +29,10 @@ Display, Archivo e Fragment Mono). Offline ele continua funcionando, com as font
   uma invenção nova; se não fechar, elas apenas se afastam.
 - **Receita de 2 ingredientes** funciona em qualquer ordem. **Receita de 3 ou 4** exige a
   ordem histórica de montagem, passo a passo.
-- A **gaveta** no pé da bancada guarda tudo o que você já descobriu. Clique para trazer de
-  volta, ou arraste uma peça para lá para devolvê-la.
+- A **gaveta** é a coluna à direita da bancada, separada por era, com a ficha de cada peça no
+  hover: nome, como foi criada, o que é e o que destrava. Clique para trazer de volta, arraste
+  uma peça até a coluna para devolvê-la, ou use o **botão direito** sobre uma peça da bancada
+  para removê-la.
 - Cada invenção montada abre um **registro**: o ano, quem inventou, a era a que pertence e o
   que ela **destrava** na árvore.
 - **Dez invenções centrais** — os marcos, de 3500 a.C. a 2022 — abrem uma ficha completa com o

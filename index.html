@@ -131,17 +131,17 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   padding:17px 18px 0;flex:0 0 auto;
 }
 .gav-rot{
-  font-family:var(--medida);font-size:10px;letter-spacing:.16em;
+  font-family:var(--medida);font-size:11px;letter-spacing:.16em;
   color:var(--tinta-3);flex:0 0 auto;
 }
 .gav-conta{
-  margin-left:auto;font-family:var(--medida);font-size:9px;
+  margin-left:auto;font-family:var(--medida);font-size:11px;
   letter-spacing:.09em;color:var(--tinta-3);
 }
 .gav-ajuda{
   flex:0 0 auto;padding:6px 18px 12px;border-bottom:1px solid var(--trilho);
   font-family:var(--medida);font-size:8.5px;line-height:1.55;
-  letter-spacing:.06em;color:#5c544a;
+  letter-spacing:.06em;color:var(--tinta-3);
 }
 .gav-lista{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
@@ -176,8 +176,9 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   color:var(--tinta);background:var(--chapa-alta);border-color:var(--trilho);outline:none;
 }
 .gav-item:focus-visible{border-color:var(--era)}
-.gav-g{width:26px;height:26px;flex:0 0 26px;display:block}
+.gav-g{width:26px;height:26px;flex:0 0 26px;display:block;--p1:var(--tinta-2);--p2:var(--tinta-3)}
 .gav-g svg{width:26px;height:26px;display:block}
+.gav-item:hover .gav-g,.gav-item:focus-visible .gav-g{--p1:var(--tinta);--p2:var(--tinta-2)}
 .gav-t{min-width:0;display:flex;flex-direction:column;gap:2px}
 .gav-n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
 .gav-ano{
@@ -210,9 +211,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .peca.arrastando{cursor:grabbing;z-index:40}
 .peca.arrastando .assento{
   border-color:var(--era);background:#262019;
-  box-shadow:0 18px 40px rgba(0,0,0,.55),
-             0 0 0 1px color-mix(in srgb,var(--era) 38%,transparent),
-             0 0 30px color-mix(in srgb,var(--era) 20%,transparent);
+  box-shadow:0 18px 40px rgba(0,0,0,.55);
 }
 .peca.alvo .assento{border-color:var(--era);background:#262019}
 .peca.alvo .assento::after{
@@ -281,10 +280,9 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   background:var(--era);outline:1px solid color-mix(in srgb,var(--era) 34%,transparent);
   outline-offset:2px;
 }
-/* O fio também conduz: quando há encaixe próximo, ele pulsa. */
+/* O fio também conduz: quando há encaixe próximo, ele engrossa e pulsa. */
 .uniao.energizada{
   height:2px;
-  box-shadow:0 0 12px color-mix(in srgb,var(--era) 50%,transparent);
   animation:fluxo .9s ease-in-out infinite;
 }
 @keyframes fluxo{0%,100%{opacity:.62}50%{opacity:1}}
@@ -309,9 +307,9 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 @keyframes nucleo{0%{transform:scale(.3);opacity:1}55%{transform:scale(1.5);opacity:.75}100%{transform:scale(2.4);opacity:0}}
 .peca.sintetizada .assento{animation:sintese .78s cubic-bezier(.16,1,.3,1)}
 @keyframes sintese{
-  0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--era) 55%,transparent)}
-  45%{box-shadow:0 0 34px 2px color-mix(in srgb,var(--era) 32%,transparent)}
-  100%{box-shadow:0 0 0 0 transparent}
+  0%{border-color:var(--era);background:#2b241c}
+  55%{border-color:color-mix(in srgb,var(--era) 60%,var(--trilho));background:#262019}
+  100%{border-color:var(--trilho);background:var(--chapa-alta)}
 }
 
 /* ─────────── NOTA ─────────── */
@@ -518,7 +516,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 }
 @media (max-width:720px){
   .app{grid-template-columns:minmax(0,1fr);
-       grid-template-rows:64px minmax(0,1fr) 126px 92px 140px;
+       grid-template-rows:64px minmax(0,1fr) 120px 118px 140px;
        grid-template-areas:"trilho" "bancada" "gaveta" "nota" "fita"}
   .trilho{height:64px;padding:0 16px;gap:14px}
   .marca{font-size:26px}
@@ -584,7 +582,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
       <span class="gav-rot">PEÇAS</span>
       <span class="gav-conta" id="gavConta">0 DESCOBERTAS</span>
     </div>
-    <div class="gav-ajuda">CLIQUE TRAZ UMA CÓPIA · BOTÃO DIREITO NA BANCADA REMOVE</div>
+    <div class="gav-ajuda">CLIQUE TRAZ · DIR. NA BANCADA REMOVE</div>
     <div class="gav-lista" id="gavLista"
          aria-label="Peças já descobertas, separadas por era. Clique para trazer uma cópia à bancada; arraste uma peça até aqui para devolvê-la."></div>
   </section>
@@ -1463,11 +1461,12 @@ function comoFoiCriada(id){
       ? "Material inicial — já está na bancada desde o começo."
       : "Peça base da árvore.";
   }
+  if (r.seq.length > 2) return r.seq.map((x, i) => `${i + 1}. ${IT[x].n}`).join(" → ");
   return r.seq.map(x => IT[x].n).join(" + ");
 }
 function oQueDesbloqueia(id){
   const nomes = [...new Set(RECEITAS.filter(r => r.seq.includes(id)).map(r => IT[r.out].n))];
-  return nomes.length ? nomes.join(" · ") : "Nada nesta árvore — é um marco final.";
+  return nomes.length ? nomes.join(" · ") : "Nenhuma receita desta árvore parte dela.";
 }
 function abrirDica(id, el, p){
   const d = IT[id];
@@ -1499,9 +1498,12 @@ function posicionarDica(el){
   if (!el) return;
   const r = el.getBoundingClientRect();
   const w = dica.offsetWidth, h = dica.offsetHeight, gap = 12;
-  let left = r.right + gap;
+  /* Fica no lado com mais espaço: a gaveta é a borda direita, então a
+     ficha abre sobre a bancada e não cobre o registro. */
+  let left = (r.left >= innerWidth - r.right) ? r.left - w - gap : r.right + gap;
+  if (left < gap) left = r.right + gap;
   if (left + w > innerWidth - gap) left = r.left - w - gap;
-  if (left < gap) left = Math.min(innerWidth - w - gap, Math.max(gap, r.left));
+  left = Math.max(gap, Math.min(innerWidth - w - gap, left));
   let top = r.top + r.height / 2 - h / 2;
   top = Math.max(gap, Math.min(innerHeight - h - gap, top));
   dica.style.left = Math.round(left) + "px";
@@ -1670,15 +1672,16 @@ function menuPeca(ev){
 }
 
 function pegarPeca(ev){
+  if (ev.button !== 0) return; // botão direito é remoção, não arraste
   const uid = +ev.currentTarget.dataset.uid;
   const p = elDe(uid);
   if (!p) return;
   ev.preventDefault();
-  fecharDica();
   try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
-  ev.currentTarget.focus();
   const pt = dentro(ev.clientX, ev.clientY);
   arraste = { p, dx: pt.x - p.x, dy: pt.y - p.y, movido:false, alvo:null };
+  ev.currentTarget.focus();
+  fecharDica();
   ev.currentTarget.classList.add("arrastando");
   uniaoEl = document.createElement("div");
   uniaoEl.className = "uniao";
@@ -1832,11 +1835,6 @@ function fundir(r, seq, base, entrada){
   const x = Math.round((base.x + entrada.x) / 2) - 66;
   const y = Math.round((base.y + entrada.y) / 2) - 40;
 
-  /* O efeito nasce do encontro dos dois centros, não do canto de um. */
-  const c1 = base.el ? centro(base) : { x: base.x + 66, y: base.y + 96 };
-  const c2 = entrada.el ? centro(entrada) : { x: entrada.x + 66, y: entrada.y + 96 };
-  forja((c1.x + c2.x) / 2, (c1.y + c2.y) / 2);
-
   S.bancada = S.bancada.filter(p => p !== base && p !== entrada);
   const nova = novaPeca(r.out, x, y);
   nova.novo = true;
@@ -1847,6 +1845,10 @@ function fundir(r, seq, base, entrada){
   S.registro = r.out;
   S.tentativa = [];
   desenhar();
+  /* O efeito nasce no assento da peça nova — o ponto exato onde os dois
+     componentes se encontraram — e não no canto do retângulo.            */
+  const c = centro(nova);
+  forja(c.x, c.y);
   atualizarTrilho();
   renderNota();
   renderFita();
@@ -2152,7 +2154,7 @@ function iniciar(){
   const gavLista = $("gavLista");
   gavLista.addEventListener("click", ev => {
     const b = ev.target.closest(".gav-item");
-    if (b) puxarPeca(b.dataset.id);
+    if (b){ fecharDica(); puxarPeca(b.dataset.id); }
   });
   /* Hover e foco abrem a ficha; rolar a lista fecha para a dica não ficar
      pendurada num item que saiu de quadro.                                */

@@ -105,12 +105,15 @@ rótulo decorativo não interativo.
 
 ## 4. Espaço e forma
 
-- Grade da página: `76px / 1fr / 164px` no desktop, coluna lateral de 350 px.
+- Grade da página: `76px / 1fr / 164px` no desktop, com a bancada à esquerda e
+  duas colunas de 300 px (gaveta) e 336 px (nota) à direita. Abaixo de 1180 px
+  a bancada ocupa a largura toda e gaveta e nota se deitam lado a lado.
 - Peça: 132 × ~169 px no total — rótulo acima, assento de 132 × 132 px (raio
   9 px, borda 1 px `--trilho`, faixa de 4 px na aresta de cima), medida abaixo.
-- Raio de painel: 14 px. Nada tem sombra fora do estado de arraste.
+- Raio de painel: 14 px.
 - Respiro padrão: 8 / 14 / 18 / 24 / 30 px.
-- A bancada desconta a altura da gaveta antes de posicionar ou limitar peças.
+- A chapa inteira é área útil: a gaveta saiu do rodapé e virou coluna, então a
+  bancada não desconta altura de bandeja nenhuma.
 
 ## 5. Componentes
 
@@ -119,11 +122,19 @@ rótulo decorativo não interativo.
   ABAIXO (ano real em caixa alta ou `CONSTRUÇÃO DIDÁTICA`). O ponto cinza no
   canto superior direito marca degrau didático; a corrente de nós no canto
   esquerdo conta as etapas da montagem (elos de 1 px ligando os nós).
-  Arrastável; hover acende a borda do assento; alvo recebe contorno tracejado
-  da cor da era; falha sacode (`nega`).
-- **Gaveta** — bandeja fixa no pé da chapa, 58 px (52 px no celular). Lista
-  tudo que já foi descoberto. Clique traz uma cópia; arrastar uma peça para cá
-  a devolve. É o que impede a partida de travar por falta de material.
+  Arrastável; hover acende a borda do assento e abre a ficha da peça; alvo
+  recebe contorno tracejado da cor da era; falha sacode (`nega`). Clique com o
+  botão direito (ou `Delete`) remove a peça da bancada sem perdê-la na gaveta.
+- **Gaveta** — coluna à direita da bancada, com rolagem vertical e uma seção
+  por era (cabeçalho fixo com cor, nome e `descobertos/total`). Lista tudo que
+  já foi descoberto como linha de ícone, nome e ano. Clique traz uma cópia;
+  arrastar uma peça até aqui a devolve. É o que impede a partida de travar por
+  falta de material e o que evita a tira horizontal de 104 peças.
+- **Dica** — ficha de 312 px que abre no hover ou no foco de uma peça, da
+  gaveta ou da bancada. Traz era e selo de marco, nome, data e autor, `COMO FOI
+  CRIADO` (a receita que a produz), `O QUE É` (primeira frase do registro ou a
+  marca de degrau didático) e `DESBLOQUEIA` (tudo que a peça destrava). Fica no
+  lado com mais espaço e desaparece no arraste e na rolagem.
 - **Fita** — rodapé de 164 px com a receita ativa. Duas etapas mostram `+`
   e a legenda `ORDEM LIVRE`; três ou quatro mostram `01 → 02 → …` e
   `A ORDEM IMPORTA`. A ordem exibida é a histórica, não a do gesto.
@@ -145,7 +156,12 @@ rótulo decorativo não interativo.
 
 - Chegada de peça: `chegar` 500 ms, escala .82 → 1.
 - Recusa: `negar` 340 ms, deslocamento de ±7 px.
-- Faísca de fusão: 620 ms, escala 1 → 9, opacidade 1 → 0.
+- Aproximação: o alvo pulsa um campo de 1 px na cor da era (`campo`, 1,15 s,
+  loop) e a linha de união ganha 2 px e brilho (`fluxo`, 0,9 s). Enquanto dura
+  o arraste, o assento levantado recebe um halo da era.
+- Síntese: núcleo, três ondas e o assento novo aceso (`forja` e `sintese`,
+  620–780 ms). Só quando a receita fecha, no ponto exato onde os dois
+  componentes se encontraram.
 - Descoberta: o fogo tem três quadros (160 ms cada, 980 ms no total). A peça
   acende no instante em que nasce e assenta no quadro 1 — só na primeira vez
   que aquele item é descoberto. Na bancada, na gaveta, no códice e no PDF o
@@ -157,11 +173,14 @@ rótulo decorativo não interativo.
 - Contraste medido: principal 14,4:1 · secundário 7,7:1 · rótulos 4,9:1 ·
   chip de era 7,0–11,0:1.
 - Cada peça é `role="button"`, focável, com `aria-label` que inclui ano ou
-  marcação didática e o número de etapas.
-- Teclado: setas movem a peça, Enter/Space levanta e engata, Escape fecha
-  revelação e código.
+  marcação didática, o número de etapas e a instrução de remoção.
+- Teclado: setas movem a peça, Enter/Space levanta e engata, `Delete` remove
+  a peça da bancada, Escape fecha revelação e código. A gaveta é uma lista de
+  botões agrupada por era; hover e foco abrem a mesma ficha, e a revelação dos
+  grupos respeita a ordem das eras no DOM.
 - Regiões `aria-live` para a fala do leitor e para o aviso.
-- Touch: `touch-action:none` nas peças; alvos de 132 px.
+- Touch: `touch-action:none` nas peças; alvos de 132 px; na gaveta a linha
+  inteira é o alvo, não só o ícone.
 
 ## 8. O que este sistema recusa
 

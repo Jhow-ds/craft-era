@@ -34,7 +34,7 @@ Padrão de fidelidade **misto, declarado**: os marcos de invenção são reais, 
 
 ## Capabilities and Constraints
 
-- Mecânica: arrastar itens em um espaço livre; a proximidade de dois itens dispara a tentativa de receita. Receitas de 2 ingredientes são livres de ordem; receitas de 3–4 exigem a ordem histórica de montagem. Arrastar uma peça para a gaveta a devolve.
+- Mecânica: arrastar itens em um espaço livre; a proximidade de dois itens dispara a tentativa de receita. Receitas de 2 ingredientes são livres de ordem; receitas de 3–4 exigem a ordem histórica de montagem. A coluna de peças fica à direita da bancada, separada por era, com a ficha de cada item no hover; clique traz uma cópia, arrastar até a coluna devolve, e o botão direito sobre uma peça da bancada a remove.
 - Receitas de 2 a 4 ingredientes, profundidade suficiente para que a IA generativa exija a cadeia completa.
 - Cada invenção descoberta abre um registro histórico: ano, responsável, e o que aquela invenção destravou.
 - Progressão organizada por eras, cada era com identidade cromática própria.
